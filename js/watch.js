@@ -40,9 +40,9 @@ function canvasTex(w, h, draw, srgb = true){
 const shade = (hex, k)=>{ const c = new THREE.Color(hex); c.multiplyScalar(k); return '#' + c.getHexString(); };
 
 // Grande Tapisserie : pyramides tronquees en grille (carte de normales + couleur)
-const TAP_CELLS = 34;
+const TAP_CELLS = 25;
 function tapisserieMaps(color){
-  const S = 2048, n = TAP_CELLS, c = S / n, g = c * 0.13, b = c * 0.2;
+  const S = 2048, n = TAP_CELLS, c = S / n, g = c * 0.16, b = c * 0.22;
   const normal = canvasTex(S, S, (x)=>{
     x.fillStyle = 'rgb(128,128,255)'; x.fillRect(0, 0, S, S);
     for(let i = 0; i < n; i++) for(let j = 0; j < n; j++){
@@ -81,11 +81,30 @@ function printTexture(v){
       g.beginPath(); g.moveTo(c + Math.cos(a) * r1, c + Math.sin(a) * r1); g.lineTo(c + Math.cos(a) * r2, c + Math.sin(a) * r2); g.stroke();
     }
     g.globalAlpha = 1;
-    // signature sous le logo AP applique (le logo lui-meme est en relief, voir addLogo)
-    g.font = '500 50px "Jost", Arial, sans-serif'; g.letterSpacing = '10px';
-    g.fillText('AUDEMARS PIGUET', c + 5, c - c * 0.4);
-    g.font = '500 30px "Jost", Arial, sans-serif'; g.letterSpacing = '10px'; g.globalAlpha = 0.92;
-    g.fillText('AUTOMATIC', c + 5, c + c * 0.4);
+    // signature a empattements sous le logo AP applique (le logo est en relief, voir addLogo)
+    const serif = '"Times New Roman", "Cormorant Garamond", Georgia, serif';
+    const smallCaps = (txt, y, big, small, spacing)=>{
+      // capitales initiales plus grandes, comme la signature gravee de la marque
+      g.letterSpacing = spacing + 'px'; g.textAlign = 'left';
+      const parts = []; let w = 0;
+      for(const word of txt.split(' ')){
+        const a = word[0], rest = word.slice(1);
+        g.font = '600 ' + big + 'px ' + serif; const wa = g.measureText(a).width;
+        g.font = '600 ' + small + 'px ' + serif; const wr = g.measureText(rest).width;
+        parts.push([a, rest, wa, wr]); w += wa + wr;
+      }
+      w += (parts.length - 1) * small * 0.45;
+      let x = c - w / 2;
+      parts.forEach(([a, rest, wa, wr])=>{
+        g.font = '600 ' + big + 'px ' + serif; g.fillText(a, x, y);
+        g.font = '600 ' + small + 'px ' + serif; g.fillText(rest, x + wa, y + (big - small) * 0.36);
+        x += wa + wr + small * 0.45;
+      });
+      g.textAlign = 'center';
+    };
+    smallCaps('AUDEMARS PIGUET', c - c * 0.305, 66, 50, 3);
+    g.font = '600 40px ' + serif; g.letterSpacing = '6px';
+    g.fillText('AUTOMATIC', c + 3, c - c * 0.205);
     g.font = '400 20px "Jost", Arial, sans-serif'; g.letterSpacing = '6px'; g.globalAlpha = 0.8;
     g.fillText('SWISS MADE', c + 3, c + c * 0.905);
   });
@@ -200,6 +219,19 @@ function roundedRect(w, h, r, path = new THREE.Shape()){
   path.lineTo(x, y + r); path.quadraticCurveTo(x, y, x + r, y);
   return path;
 }
+// polygone quelconque a coins arrondis
+function roundedFromPoints(v, cr, path = new THREE.Shape()){
+  const n = v.length;
+  for(let i = 0; i < n; i++){
+    const p = v[(i + n - 1) % n], c = v[i], q = v[(i + 1) % n];
+    const s = c.clone().add(p.clone().sub(c).normalize().multiplyScalar(cr));
+    const e = c.clone().add(q.clone().sub(c).normalize().multiplyScalar(cr));
+    if(i === 0) path.moveTo(s.x, s.y); else path.lineTo(s.x, s.y);
+    path.quadraticCurveTo(c.x, c.y, e.x, e.y);
+  }
+  path.closePath();
+  return path;
+}
 function circlePath(r){ const p = new THREE.Path(); p.absarc(0, 0, r, 0, TAU, true); return p; }
 // roue dentee (rouage / echappement) avec bras evides
 function wheelShape(r, teeth, spokes, hub){
@@ -229,8 +261,9 @@ export function createWatch(){
   M.flank = new THREE.MeshPhysicalMaterial({ metalness:1, roughness:0.34, anisotropy:0.7, anisotropyRotation:0, roughnessMap:brushTexture(false) });
   M.trim = new THREE.MeshPhysicalMaterial({ metalness:1, roughness:0.08 });             // vis, index, aiguilles (or gris/rose)
   M.gasket = new THREE.MeshStandardMaterial({ color:0x0a0a0b, roughness:0.55, metalness:0 });
-  M.dial = new THREE.MeshPhysicalMaterial({ metalness:0.35, roughness:0.36, clearcoat:0.5, clearcoatRoughness:0.15, normalScale:new THREE.Vector2(0.9, 0.9) });
-  M.print = new THREE.MeshStandardMaterial({ transparent:true, roughness:0.5, metalness:0, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-2 });
+  M.dial = new THREE.MeshPhysicalMaterial({ metalness:0.35, roughness:0.36, clearcoat:0.5, clearcoatRoughness:0.15, normalScale:new THREE.Vector2(1.25, 1.25) });
+  // impressions en decoupe opaque (alphaTest) : un calque transparent serait invisible sous la glace saphir (transmission)
+  M.print = new THREE.MeshStandardMaterial({ alphaTest:0.35, roughness:0.45, metalness:0.1, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2 });
   M.flange = new THREE.MeshStandardMaterial({ roughness:0.45, metalness:0.3, side:THREE.DoubleSide });
   M.lume = new THREE.MeshStandardMaterial({ color:0xeef3ea, roughness:0.55, emissive:0x6fffd2, emissiveIntensity:0 });
   M.date = new THREE.MeshStandardMaterial({ roughness:0.5 });
@@ -252,10 +285,9 @@ export function createWatch(){
   // --- Boite tonneau : faces satinees, flancs et chanfreins polis
   { const s = new THREE.Shape();
     const outline = (k, sh = new THREE.Shape())=>{
-      const X = 1.97 * k, Y = 2.08 * k, F = 1.18 * k;
-      sh.moveTo(-F, Y); sh.lineTo(F, Y);
-      sh.bezierCurveTo(F + 0.48 * k, Y, X, 1.3 * k, X, 0); sh.bezierCurveTo(X, -1.3 * k, F + 0.48 * k, -Y, F, -Y);
-      sh.lineTo(-F, -Y); sh.bezierCurveTo(-F - 0.48 * k, -Y, -X, -1.3 * k, -X, 0); sh.bezierCurveTo(-X, 1.3 * k, -F - 0.48 * k, Y, -F, Y);
+      const P = [[-1.52, 2.35], [1.52, 2.35], [2.09, 1.1], [2.09, -1.1], [1.52, -2.35], [-1.52, -2.35], [-2.09, -1.1], [-2.09, 1.1]]
+        .map(([x, y])=>new THREE.Vector2(x * k, y * k));
+      roundedFromPoints(P, 0.16 * k, sh);
       sh.holes.push(circlePath(1.5));
       return sh;
     };
@@ -275,10 +307,10 @@ export function createWatch(){
     const g = extrude(s, 0.1, 0.038, 5, 96); g.translate(0, 0, 0.283);
     add(g, [M.satin, M.polish]); }
   // --- 8 vis hexagonales en or gris, toutes alignees dans le meme sens (detail d'origine)
-  const screwGeo = new THREE.CylinderGeometry(0.078, 0.078, 0.03, 6).rotateX(Math.PI / 2);
+  const screwGeo = new THREE.CylinderGeometry(0.094, 0.094, 0.036, 6).rotateX(Math.PI / 2);
   for(let k = 0; k < 8; k++){
     const a = Math.PI / 8 + k * Math.PI / 4;
-    const m = add(screwGeo, M.trim); m.position.set(Math.cos(a) * 1.72, Math.sin(a) * 1.72, 0.428);
+    const m = add(screwGeo, M.trim); m.position.set(Math.cos(a) * 1.72, Math.sin(a) * 1.72, 0.432);
   }
   // --- Rehaut (minuterie inclinee)
   add(lathe([[1.47, 0.42], [1.37, 0.17]], 300), M.flange);
@@ -389,35 +421,33 @@ export function createWatch(){
 
   // --- Bracelet integre : rangs de maillons lateraux satines + maillon central poli decale
   const bracelet = new THREE.Group(); watch.add(bracelet);
-  { const s = new THREE.Shape(); s.moveTo(-1.2, -0.13); s.lineTo(1.2, -0.13); s.lineTo(1.15, 0.13); s.lineTo(-1.15, 0.13); s.closePath();
-    const g = extrude(s, 0.26, 0.035, 4, 4); g.translate(0, 0, -0.13);
-    [1, -1].forEach(dir=>{ const m = add(g, [M.satinV, M.polish], bracelet); m.position.set(0, dir * 2.2, -0.1); if(dir < 0) m.rotation.z = Math.PI; }); }
-  { const R = 3.2, a0 = Math.asin(2.38 / 3.2), da = 0.1375, rows = 10, zc = -0.11 - R * Math.cos(a0);
+
+  { const R = 3.3, a0 = Math.asin(2.64 / 3.3), da = 0.155, rows = 9, zc = -0.11 - R * Math.cos(a0);
     const frame = (a, dir)=>{
       const P = new THREE.Vector3(0, dir * R * Math.sin(a), zc + R * Math.cos(a));
       const T = new THREE.Vector3(0, dir * Math.cos(a), -Math.sin(a)).normalize();
       const N = new THREE.Vector3(0, dir * Math.sin(a), Math.cos(a)).normalize();
       return { P, m:new THREE.Matrix4().makeBasis(new THREE.Vector3(dir, 0, 0), T, N) };
     };
-    const centerGeo = extrude(roundedRect(0.44, 0.24, 0.05), 0.15, 0.03, 4); centerGeo.translate(0, 0, -0.075);
+    const centerGeo = extrude(roundedRect(0.5, 0.3, 0.07), 0.16, 0.035, 4); centerGeo.translate(0, 0, -0.08);
     const sideCache = {};
     [1, -1].forEach(dir=>{
       for(let i = 0; i < rows; i++){
-        const f = i / (rows - 1), w = 2.44 - 0.62 * f, th = 0.2 - 0.04 * f;
-        const ws = (w - 0.56) / 2, key = ws.toFixed(3) + th.toFixed(3);
+        const f = i / (rows - 1), w = 3.0 - 0.5 * f, th = 0.21 - 0.03 * f;
+        const ws = (w - 0.62) / 2, key = ws.toFixed(3) + th.toFixed(3);
         if(!sideCache[key]){
-          const s = new THREE.Shape(); s.moveTo(-ws / 2, -0.19); s.lineTo(ws / 2, -0.19); s.lineTo(ws / 2 - 0.015, 0.19); s.lineTo(-ws / 2 + 0.015, 0.19); s.closePath();
+          const s = new THREE.Shape(); s.moveTo(-ws / 2, -0.23); s.lineTo(ws / 2, -0.23); s.lineTo(ws / 2 - 0.02, 0.23); s.lineTo(-ws / 2 + 0.02, 0.23); s.closePath();
           const g = extrude(s, th, 0.03, 4, 4); g.translate(0, 0, -th / 2); sideCache[key] = g;
         }
         const { P, m } = frame(a0 + i * da, dir);
         [-1, 1].forEach(side=>{
           const link = shadowy(new THREE.Mesh(sideCache[key], [M.satinV, M.polish]));
-          link.applyMatrix4(new THREE.Matrix4().makeTranslation(side * (0.28 + ws / 2), 0, 0).premultiply(m));
+          link.applyMatrix4(new THREE.Matrix4().makeTranslation(side * (0.31 + ws / 2), 0, 0).premultiply(m));
           link.position.add(P); bracelet.add(link);
         });
       }
-      for(let i = -1; i < rows - 1; i++){
-        const { P, m } = frame(a0 + (i + 0.5) * da, dir);
+      for(let i = 0; i < rows; i++){
+        const { P, m } = frame(a0 + i * da, dir);
         const c = shadowy(new THREE.Mesh(centerGeo, M.polish)); c.applyMatrix4(m); c.position.add(P); bracelet.add(c);
       }
     });
@@ -473,7 +503,7 @@ export function createWatch(){
     { id:'logo', pos:new THREE.Vector3(0.16, 0.66, 0.19), normal:new THREE.Vector3(0, 0, 1) },
     { id:'date', pos:new THREE.Vector3(1.0, 0, 0.19), normal:new THREE.Vector3(0, 0, 1) },
     { id:'crown', pos:new THREE.Vector3(2.46, 0, -0.08), normal:new THREE.Vector3(1, 0, 0) },
-    { id:'bracelet', pos:new THREE.Vector3(0, 2.5, 0.02), normal:new THREE.Vector3(0, 0.35, 1) },
+    { id:'bracelet', pos:new THREE.Vector3(0, 2.66, 0.08), normal:new THREE.Vector3(0, 0.35, 1) },
     { id:'balance', pos:new THREE.Vector3(0.55, 0.6, -0.45), normal:new THREE.Vector3(0, 0, -1) },
     { id:'rotor', pos:new THREE.Vector3(-0.5, -0.75, -0.45), normal:new THREE.Vector3(0, 0, -1) },
   ];

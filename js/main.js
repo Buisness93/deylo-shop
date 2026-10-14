@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { createWatch, VARIANTS } from './watch.js?v=3';
+import { createWatch, VARIANTS } from './watch.js?v=6';
 
 const $ = (id)=>document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -69,7 +69,7 @@ function studioEnvironment(){
   box(8, 1.6, 2.6, [0, 5, 11], [0, 0, 0]);                       // face haute : filet sur la lunette
   box(12, 3, 0.8, [0, -9, 6], [0, 0, 0], 0xffeedd);              // reflet bas, doux
   box(6, 6, 1.2, [0, 3, -12], [0, 0, 0]);                        // contre-jour (fond, calibre)
-  box(18, 12, 0.32, [0, 1, 14], [0, 0, 0], 0xf4efe8);            // reflecteur face : donne sa matiere au satine
+  box(18, 12, 0.55, [0, 1, 14], [0, 0, 0], 0xf4efe8);            // reflecteur face : donne sa matiere au satine
   box(5, 5, 1.1, [7, 7, 9], [0, 0, 0]);                          // octobox haute droite
   box(16, 10, 0.45, [0, 1, -14], [0, 0, 0], 0xf0f2f6);           // reflecteur arriere : le fond et le calibre respirent
   box(2, 14, 1.8, [-11, 0, -6], [0, 0, 0], 0xfff2e2);            // bande de profil (bracelet)
