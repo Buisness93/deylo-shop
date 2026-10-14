@@ -57,6 +57,76 @@
         -90,
         0
       ]
+    },
+    {
+      "id": "patek-calatrava",
+      "brand": "Patek Philippe",
+      "model": "Calatrava",
+      "sub": "Boîte noire · cadran noir · date à 3 h",
+      "title": "Patek Philippe",
+      "author": "viola55477",
+      "authorUrl": "https://sketchfab.com/viola55477",
+      "source": "https://sketchfab.com/3d-models/patek-philippe-511b5eae61994ef69550bdd1ac0231d3",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial": true,
+      "path": "models/patek-calatrava/scene.glb"
+    },
+    {
+      "id": "omega-seamaster300",
+      "brand": "Omega",
+      "model": "Seamaster 300",
+      "sub": "Lunette bleue graduée · Master Co-Axial",
+      "title": "OMEGA Seamaster 300 Watch",
+      "author": "Rowen Halpern",
+      "authorUrl": "https://sketchfab.com/RowenHalpern",
+      "source": "https://sketchfab.com/3d-models/omega-seamaster-300-watch-1412158447e84492943020ef817e63ca",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial": true,
+      "path": "models/omega-seamaster300/scene.glb"
+    },
+    {
+      "id": "omega-speedmaster",
+      "brand": "Omega",
+      "model": "Speedmaster Moonwatch",
+      "sub": "Chronographe · lunette tachymètre · bracelet NATO",
+      "title": "Omega Speedmaster Moon Watch",
+      "author": "SpatialNeglect",
+      "authorUrl": "https://sketchfab.com/jeandiz",
+      "source": "https://sketchfab.com/3d-models/omega-speedmaster-moon-watch-88622ebc61d943c589a3687b002c1ca6",
+      "license": "CC BY-NC 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "commercial": false,
+      "path": "models/omega-speedmaster/scene.glb"
+    },
+    {
+      "id": "omega-deville",
+      "brand": "Omega",
+      "model": "De Ville Prestige",
+      "sub": "Acier · cadran argenté · bracelet alligator",
+      "title": "Omega De Ville Prestige",
+      "author": "IrisProcess",
+      "authorUrl": "https://sketchfab.com/IrisProcess",
+      "source": "https://sketchfab.com/3d-models/omega-de-ville-prestige-3e329a67f4634e45ae9e62ffc5aa30f7",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial": true,
+      "path": "models/omega-deville/scene.glb"
+    },
+    {
+      "id": "hublot-bigbang",
+      "brand": "Hublot",
+      "model": "Big Bang",
+      "sub": "Or jaune · cadran crème · bracelet caoutchouc",
+      "title": "HUBLOT Watch",
+      "author": "DEEN",
+      "authorUrl": "https://sketchfab.com/9911260444",
+      "source": "https://sketchfab.com/3d-models/hublot-watch-fb5263e1bf7146f59672b98a747ae173",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial": true,
+      "path": "models/hublot-bigbang/scene.glb"
     }
   ]
 }
