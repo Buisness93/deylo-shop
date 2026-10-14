@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NOCTÉA — Calibre N.01</title>
+<meta name="description" content="NOCTÉA, maison horlogère fictive : explorez le Calibre N.01 en 3D, du cadran soleillé au mouvement visible par le fond saphir.">
+<meta name="theme-color" content="#0b0a09">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%230b0a09' stroke='%23c8a97e' stroke-width='3'/%3E%3Cpath d='M32 14v18l11 7' stroke='%23efe8dc' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-mark">NOCTÉA</div>
+  <div class="loader-line"><i id="loaderBar"></i></div>
+  <div class="loader-sub">Haute horlogerie · depuis 1897</div>
+</div>
+
+<header class="nav" id="nav">
+  <a href="#top" class="brand" aria-label="NOCTÉA, retour en haut">NOCTÉA</a>
+  <nav class="nav-links" aria-label="Navigation principale">
+    <a href="#collection">Collection</a>
+    <a href="#calibre">Calibre</a>
+    <a href="#savoir-faire">Savoir-faire</a>
+  </nav>
+  <a href="#rendez-vous" class="nav-cta">Rendez-vous privé</a>
+</header>
+
+<main id="top">
+  <!-- Scene 3D collante : le defilement fait tourner la camera autour de la montre -->
+  <section class="stage" id="stage" aria-label="La montre en détail">
+    <div class="stage-sticky" id="stageSticky">
+      <div class="stage-glow" aria-hidden="true"></div>
+      <canvas id="gl" aria-label="Montre NOCTÉA Calibre N.01 en trois dimensions" role="img"></canvas>
+      <div class="hotspots" id="hotspots"></div>
+
+      <div class="chapters" id="chapters">
+        <article class="chapter ch-hero" data-ch="0">
+          <p class="eyebrow">Calibre N.01 · Collection 2026</p>
+          <h1>Le temps,<br><em>sculpté.</em></h1>
+          <p class="lede">Quarante millimètres d'or, d'acier ou de titane, deux cent dix-huit composants assemblés à la main, et une seule obsession : la justesse.</p>
+          <div class="finish-pick" id="finishPick" role="radiogroup" aria-label="Finition"></div>
+          <div class="hero-actions">
+            <button class="btn btn-gold" id="btnAtelier" type="button">Entrer dans l'atelier</button>
+            <a class="btn btn-line" href="#collection">La collection</a>
+          </div>
+          <p class="live-time"><span>Heure locale</span><b id="liveTime">--:--:--</b><small>Les aiguilles indiquent la vôtre.</small></p>
+        </article>
+        <article class="chapter ch-right" data-ch="1">
+          <p class="eyebrow">I — Le cadran</p>
+          <h2>Un soleil<br><em>de laiton.</em></h2>
+          <p>Le cadran est soleillé à la main : des milliers de stries rayonnantes captent la lumière et la renvoient en éventail. Douze index appliqués, facettés puis polis, posés un à un à la brucelle.</p>
+          <dl class="mini-specs"><div><dt>Index</dt><dd>Appliqués, polis miroir</dd></div><div><dt>Aiguilles</dt><dd>Dauphine, Super-LumiNova</dd></div></dl>
+        </article>
+        <article class="chapter ch-left" data-ch="2">
+          <p class="eyebrow">II — La couronne</p>
+          <h2>Trente<br><em>cannelures.</em></h2>
+          <p>Vissée, elle garantit l'étanchéité à cent mètres. Ses trente cannelures ont été dessinées pour la pulpe du doigt : on remonte, on règle, on sent chaque cran.</p>
+          <dl class="mini-specs"><div><dt>Étanchéité</dt><dd>10 bar · 100 m</dd></div><div><dt>Remontage</dt><dd>Manuel et automatique</dd></div></dl>
+        </article>
+        <article class="chapter ch-right" data-ch="3">
+          <p class="eyebrow">III — Le calibre</p>
+          <h2>Un cœur<br><em>à quatre hertz.</em></h2>
+          <p>Par le fond saphir, le Calibre N.01 se dévoile : platine perlée, ponts ornés de Côtes de Genève, trente et un rubis, vis bleuies à la flamme. Le balancier oscille huit fois par seconde, sous vos yeux.</p>
+          <dl class="mini-specs"><div><dt>Fréquence</dt><dd>28 800 alt/h</dd></div><div><dt>Réserve</dt><dd>72 heures</dd></div></dl>
+        </article>
+        <article class="chapter ch-left" data-ch="4">
+          <p class="eyebrow">IV — Le profil</p>
+          <h2>Onze millimètres<br><em>de retenue.</em></h2>
+          <p>Carrure satinée, lunette polie, cornes galbées qui épousent le poignet. Une montre qui se glisse sous une manchette et ne se fait remarquer que de près.</p>
+          <div class="hero-actions"><button class="btn btn-gold" id="btnAtelier2" type="button">L'examiner sous tous les angles</button></div>
+        </article>
+      </div>
+
+      <ol class="rail" id="rail" aria-label="Chapitres">
+        <li data-go="0"><span>Ouverture</span></li>
+        <li data-go="1"><span>Cadran</span></li>
+        <li data-go="2"><span>Couronne</span></li>
+        <li data-go="3"><span>Calibre</span></li>
+        <li data-go="4"><span>Profil</span></li>
+      </ol>
+      <div class="scroll-cue" id="scrollCue" aria-hidden="true"><i></i>Faire défiler</div>
+
+      <!-- Atelier : inspection libre -->
+      <div class="atelier" id="atelier" hidden>
+        <div class="at-top">
+          <div><p class="eyebrow">L'atelier</p><p class="at-title" id="atTitle">Nocturne</p></div>
+          <button class="at-close" id="btnClose" type="button" aria-label="Quitter l'atelier">Quitter <span aria-hidden="true">✕</span></button>
+        </div>
+        <div class="at-side">
+          <p class="at-label">Finition</p>
+          <div class="at-finishes" id="atFinishes"></div>
+          <label class="at-toggle"><input type="checkbox" id="tglNotes" checked> Annotations</label>
+          <label class="at-toggle"><input type="checkbox" id="tglSpin"> Rotation lente</label>
+        </div>
+        <div class="at-views" id="atViews" role="toolbar" aria-label="Points de vue">
+          <button type="button" data-view="0" class="on">Ensemble</button>
+          <button type="button" data-view="1">Cadran</button>
+          <button type="button" data-view="2">Couronne</button>
+          <button type="button" data-view="3">Calibre</button>
+          <button type="button" data-view="4">Profil</button>
+        </div>
+        <p class="at-hint">Glisser pour tourner · molette ou pincer pour zoomer · clic droit pour déplacer</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section collection" id="collection">
+    <header class="sec-head">
+      <p class="eyebrow">La collection</p>
+      <h2>Trois matières,<br><em>un seul calibre.</em></h2>
+    </header>
+    <div class="coll-grid" id="collGrid"></div>
+  </section>
+
+  <section class="section calibre" id="calibre">
+    <header class="sec-head">
+      <p class="eyebrow">Calibre N.01</p>
+      <h2>La mécanique<br><em>comme écriture.</em></h2>
+      <p class="sec-lede">Conçu, décoré et réglé dans nos ateliers. Chaque mouvement est ajusté en cinq positions avant d'être emboîté, puis porté vingt et un jours avant de quitter la maison.</p>
+    </header>
+    <div class="figures">
+      <div class="fig"><b data-count="72">0</b><span>heures de réserve de marche</span></div>
+      <div class="fig"><b data-count="28800" data-sep="1">0</b><span>alternances par heure</span></div>
+      <div class="fig"><b data-count="31">0</b><span>rubis</span></div>
+      <div class="fig"><b data-count="218">0</b><span>composants</span></div>
+    </div>
+    <table class="specs">
+      <tbody>
+        <tr><th>Boîte</th><td>Ø 40 mm · épaisseur 11,2 mm · cornes 48 mm</td></tr>
+        <tr><th>Matières</th><td>Or rose 18 carats, acier 904L ou titane grade 5</td></tr>
+        <tr><th>Glaces</th><td>Saphir bombé traité antireflet, fond saphir vissé</td></tr>
+        <tr><th>Mouvement</th><td>Automatique, rotor or 22 carats gravé, roue d'échappement en silicium</td></tr>
+        <tr><th>Précision</th><td>−2 / +4 secondes par jour, réglée en cinq positions</td></tr>
+        <tr><th>Étanchéité</th><td>10 bar (100 mètres), couronne vissée</td></tr>
+        <tr><th>Bracelet</th><td>Cuir pleine fleur cousu main ou caoutchouc vulcanisé, boucle ardillon assortie</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section craft" id="savoir-faire">
+    <header class="sec-head">
+      <p class="eyebrow">Savoir-faire</p>
+      <h2>Ce que l'œil devine,<br><em>la main l'a voulu.</em></h2>
+    </header>
+    <div class="craft-grid">
+      <article class="craft-card"><div class="swatch sw-cotes" aria-hidden="true"></div><h3>Côtes de Genève</h3><p>Des vagues régulières tracées à la meule de buis sur les ponts. Invisibles une fois la montre fermée, sauf pour qui retourne le boîtier.</p></article>
+      <article class="craft-card"><div class="swatch sw-perlage" aria-hidden="true"></div><h3>Perlage</h3><p>Des milliers de petits cercles qui se chevauchent sur la platine. Quatre heures de travail pour une surface qui ne réfléchit jamais deux fois la même lumière.</p></article>
+      <article class="craft-card"><div class="swatch sw-soleil" aria-hidden="true"></div><h3>Soleillage</h3><p>Le cadran tourne sous une brosse fine. Selon l'angle, il passe du noir profond à l'éclat d'un coucher de soleil.</p></article>
+    </div>
+  </section>
+
+  <section class="section rdv" id="rendez-vous">
+    <div class="rdv-in">
+      <header class="sec-head">
+        <p class="eyebrow">Rendez-vous privé</p>
+        <h2>La voir,<br><em>la porter.</em></h2>
+        <p class="sec-lede">Nos conseillers vous reçoivent en salon, sur rendez-vous, pour une présentation de la collection au poignet.</p>
+      </header>
+      <form class="rdv-form" id="rdvForm" novalidate>
+        <label><span>Nom</span><input name="nom" autocomplete="name" required></label>
+        <label><span>Adresse e-mail</span><input name="email" type="email" autocomplete="email" required></label>
+        <label><span>Salon</span><select name="salon"><option>Genève — Rue du Rhône</option><option>Paris — Place Vendôme</option><option>Tokyo — Ginza</option></select></label>
+        <label><span>Modèle souhaité</span><select name="modele" id="rdvModel"></select></label>
+        <button class="btn btn-gold" type="submit">Demander un rendez-vous</button>
+        <p class="rdv-msg" id="rdvMsg" role="status"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-brand">NOCTÉA</div>
+  <p>Maison fictive, créée pour un site de démonstration. Aucune montre n'est en vente et aucune donnée saisie n'est envoyée.</p>
+  <p class="foot-small">Montre modélisée et animée en temps réel avec three.js.</p>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
