@@ -267,14 +267,14 @@ export function createWatch(){
   M.flange = new THREE.MeshStandardMaterial({ roughness:0.45, metalness:0.3, side:THREE.DoubleSide });
   M.lume = new THREE.MeshStandardMaterial({ color:0xeef3ea, roughness:0.55, emissive:0x6fffd2, emissiveIntensity:0 });
   M.date = new THREE.MeshStandardMaterial({ roughness:0.5 });
-  M.crystal = new THREE.MeshPhysicalMaterial({ transmission:1, roughness:0, ior:1.77, thickness:0.05, metalness:0, clearcoat:1, specularIntensity:0.75, specularColor:new THREE.Color(0xb9d0ff), envMapIntensity:1.4 });
+  M.crystal = new THREE.MeshPhysicalMaterial({ transparent:true, opacity:0.1, depthWrite:false, roughness:0, metalness:0, clearcoat:1, specularIntensity:0.75, specularColor:new THREE.Color(0xb9d0ff), envMapIntensity:1.4 });
   M.inner = new THREE.MeshStandardMaterial({ color:0x08080a, roughness:0.85, side:THREE.BackSide });
   M.plate = new THREE.MeshStandardMaterial({ map:perlageTexture(), metalness:0.85, roughness:0.36 });
   M.bridge = new THREE.MeshStandardMaterial({ map:cotesTexture('#c9ccd1', [['CALIBRE 4302', 600, '500 44px "Jost", Arial, sans-serif'], ['32 JEWELS · SWISS MADE', 660, '400 28px "Jost", Arial, sans-serif']]), metalness:0.9, roughness:0.28 });
   M.bridgeSide = new THREE.MeshStandardMaterial({ color:0xd7dadf, metalness:1, roughness:0.12 });
   M.rotor = new THREE.MeshStandardMaterial({ map:cotesTexture('#d0a066', [['AUDEMARS PIGUET', 300, '500 46px "Jost", Arial, sans-serif'], ['22K GOLD', 362, '400 26px "Jost", Arial, sans-serif']]), metalness:1, roughness:0.22 });
   M.gold = new THREE.MeshStandardMaterial({ color:0xdcae68, metalness:1, roughness:0.18 });
-  M.ruby = new THREE.MeshPhysicalMaterial({ color:0xc0122f, roughness:0.04, metalness:0, clearcoat:1, transmission:0.35, thickness:0.04, ior:1.76 });
+  M.ruby = new THREE.MeshPhysicalMaterial({ color:0xc0122f, roughness:0.04, metalness:0, clearcoat:1, sheen:0.4, sheenColor:new THREE.Color(0xff4060) });
   M.blued = new THREE.MeshStandardMaterial({ color:0x1b3a9a, metalness:1, roughness:0.2 });
   M.slot = new THREE.MeshStandardMaterial({ color:0x111111, roughness:0.8 });
   M.caseback = new THREE.MeshStandardMaterial({ map:casebackTexture(), metalness:1, roughness:0.32, side:THREE.DoubleSide });

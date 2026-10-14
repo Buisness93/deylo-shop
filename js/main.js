@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { createWatch, VARIANTS } from './watch.js?v=6';
+import { createWatch, VARIANTS } from './watch.js?v=7';
 
 const $ = (id)=>document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -43,13 +43,15 @@ function lerpView(a, b, t){
 const canvas = $('gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, powerPreference:'high-performance' });
 // rendu suréchantillonné : 2x minimum, quel que soit l'ecran (aretes nettes, gravures lisibles)
-let pixelRatio = Math.min(2.5, Math.max(2, devicePixelRatio || 1));
+const PR_MOVE = Math.min(1.25, devicePixelRatio || 1), PR_STILL = Math.min(2, Math.max(1.5, devicePixelRatio || 1));
+let pixelRatio = PR_STILL;
 renderer.setPixelRatio(pixelRatio);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;   // ombres recalculees seulement quand il le faut
 
 const scene = new THREE.Scene();
 
@@ -149,6 +151,9 @@ function applyShift(target){
   const narrow = w / h < 0.8;
   camera.setViewOffset(w, h, narrow ? 0 : -shiftNow * w, narrow ? h * 0.17 : 0, w, h);
 }
+
+// outil de mesure : ?debug dans l'URL expose le rendu pour chronometrer une image
+if(/[?&]debug/.test(location.search)) window.__deylo = { renderer, composer, scene, camera, setPR:(v)=>{ pixelRatio = v; resize(); } };
 
 // ---------- Etat ----------
 let variant = 'acier';
@@ -285,7 +290,7 @@ const clock = new THREE.Clock();
 let visible = true;
 new IntersectionObserver(([e])=>{ visible = e.isIntersecting; }).observe(stage);
 const camOut = { pos:new THREE.Vector3(), target:new THREE.Vector3() };
-let lastSig = '', lastTick = -1, forceRender = true;
+let lastSig = '', lastTick = -1, forceRender = true, stillSince = 0;
 
 function frame(){
   requestAnimationFrame(frame);
@@ -305,7 +310,9 @@ function frame(){
     const heroW = 1 - smooth(0.1, 0.6, segSmooth);
     pointer.sx += (pointer.x - pointer.sx) * Math.min(1, dt * 3);
     pointer.sy += (pointer.y - pointer.sy) * Math.min(1, dt * 3);
-    W.root.rotation.y = heroW * (reduced ? 0 : Math.sin(t * 0.35) * 0.16 + pointer.sx * 0.22);
+    if(Math.abs(pointer.x - pointer.sx) < 0.002) pointer.sx = pointer.x;
+    if(Math.abs(pointer.y - pointer.sy) < 0.002) pointer.sy = pointer.y;
+    W.root.rotation.y = heroW * (reduced ? 0 : 0.08 + pointer.sx * 0.18);
     W.root.rotation.x = heroW * pointer.sy * 0.12;
     updateChapters();
   } else {
@@ -327,7 +334,8 @@ function frame(){
   night += (nightTarget - night) * Math.min(1, dt * 2.5);
   scene.environmentIntensity = 0.9 * (1 - night * 0.94);
   key.intensity = 1.6 * (1 - night * 0.97); rim.intensity = 1.4 * (1 - night * 0.9); moon.intensity = night * 0.5;
-  bloom.strength = 0.08 + night * 0.95; bloom.threshold = 3.0 - night * 2.8;
+  bloom.strength = night * 0.95; bloom.threshold = 3.0 - night * 2.8;
+  bloom.enabled = night > 0.01;            // le halo ne sert qu'a la luminescence
   W.setNight(night);
 
   if(scrollSeg > 2.6 && scrollSeg < 3.4 && !atelier) W.kickRotor(dt * 1.5);
@@ -337,8 +345,15 @@ function frame(){
   const sig = camera.position.x.toFixed(4) + camera.position.y.toFixed(4) + camera.position.z.toFixed(4) + W.root.rotation.y.toFixed(4) + W.root.rotation.x.toFixed(4) + shiftNow.toFixed(4);
   const tick = Math.floor(t * 8);
   const showsBack = camera.position.z - cam.target.z < -1;
-  const need = sig !== lastSig || tick !== lastTick || Math.abs(nightTarget - night) > 0.002 || showsBack || forceRender;
+  const moving = sig !== lastSig || Math.abs(nightTarget - night) > 0.002;
+  if(moving) stillSince = t;
+  // en mouvement : definition normale (fluide) ; des que l'image se pose : haute definition
+  // (vue du calibre : le balancier tourne en continu, on reste en definition intermediaire)
+  const wantPR = (t - stillSince) > 0.25 ? (showsBack ? Math.min(PR_STILL, 1.5) : PR_STILL) : PR_MOVE;
+  if(wantPR !== pixelRatio){ pixelRatio = wantPR; resize(); forceRender = true; }
+  const need = moving || tick !== lastTick || showsBack || forceRender;
   if(!need) return;
+  if(!moving || forceRender || tick % 4 === 0) renderer.shadowMap.needsUpdate = true;
   lastSig = sig; lastTick = tick; forceRender = false;
   W.update(dt, t);
   composer.render(dt);
@@ -355,6 +370,7 @@ function renderThumbs(){
   camera.aspect = 720 / 840; camera.fov = 30; camera.updateProjectionMatrix();
   const cards = Object.entries(VARIANTS).map(([k, v])=>{
     variant = k; W.setVariant(k); setBackdrop(); W.update(0, 0);
+    renderer.shadowMap.needsUpdate = true;
     composer.render(0);
     const img = canvas.toDataURL('image/jpeg', 0.9);
     return '<article class="coll-card" data-pick="' + k + '" style="--m:' + v.glow + '">' +
