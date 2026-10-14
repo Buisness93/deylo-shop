@@ -247,3 +247,16 @@ body.night .stage-glow{background:radial-gradient(125% 95% at 50% 42%,transparen
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
+
+/* ---------- Deylo Shop : marque, frise historique ---------- */
+.brand span{margin-left:.5em;color:var(--gold);font-weight:400}
+.loader-mark{letter-spacing:.42em}
+.histoire{border-top:1px solid var(--line);background:radial-gradient(60% 60% at 90% 20%,rgba(200,169,126,.06),transparent 70%)}
+.timeline{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line)}
+.timeline li{position:relative;padding:34px 26px 10px 0}
+.timeline li::before{content:'';position:absolute;left:0;top:-5px;width:9px;height:9px;transform:rotate(45deg);background:var(--gold)}
+.timeline b{display:block;font-family:var(--serif);font-weight:300;font-size:clamp(38px,4vw,56px);line-height:1;color:var(--ink)}
+.timeline p{margin:14px 0 0;color:var(--ink-2);font-size:14.5px}
+.timeline,.histoire .sec-head{opacity:0;transform:translateY(30px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
+@media (max-width:900px){ .timeline{grid-template-columns:1fr 1fr;row-gap:20px} }
+@media (max-width:560px){ .timeline{grid-template-columns:1fr} }

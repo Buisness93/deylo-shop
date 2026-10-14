@@ -4,6 +4,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { createWatch, VARIANTS } from './watch.js';
 
 const $ = (id)=>document.getElementById(id);
@@ -169,14 +171,14 @@ const hex = (n)=>'#' + new THREE.Color(n).getHexString();
 function buildFinishUI(){
   $('finishPick').innerHTML = Object.entries(VARIANTS).map(([k, v])=>'<button type="button" role="radio" data-v="' + k + '" aria-label="' + v.name + ' — ' + v.sub + '" style="--m:' + hex(v.metal === 0x0d0d0e ? 0x2a2b2e : v.metal) + ';--d:' + v.dial + '"><i></i><span>' + v.name + '</span></button>').join('');
   $('atFinishes').innerHTML = Object.entries(VARIANTS).map(([k, v])=>'<button type="button" data-v="' + k + '"><i style="--m:' + hex(v.metal === 0x0d0d0e ? 0x2a2b2e : v.metal) + ';--d:' + v.dial + '"></i><span><b>' + v.name + '</b><small>' + v.sub + '</small></span></button>').join('');
-  $('rdvModel').innerHTML = Object.values(VARIANTS).map(v=>'<option>Octogone ' + v.name + '</option>').join('');
+  $('rdvModel').innerHTML = Object.values(VARIANTS).map(v=>'<option>Royal Oak ' + v.name + '</option>').join('');
   document.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click', ()=>setVariant(b.dataset.v)));
 }
 function setVariant(k){
   variant = k;
   W.setVariant(k);
   document.querySelectorAll('[data-v]').forEach(b=>{ const on = b.dataset.v === k; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
-  $('atTitle').textContent = 'Octogone ' + VARIANTS[k].name;
+  $('atTitle').textContent = 'Royal Oak · ' + VARIANTS[k].name;
   document.documentElement.style.setProperty('--glow', VARIANTS[k].glow);
   setBackdrop();
   W.kickRotor(4);
@@ -220,13 +222,14 @@ function setNight(on){
 
 // ---------- Annotations ----------
 const NOTES = {
-  screws:['Huit vis hexagonales', 'Or gris, toutes alignées dans le même sens.'],
+  screws:['Huit vis hexagonales', 'Or gris, têtes toutes alignées.'],
   gasket:['Joint apparent', 'Le liseré noir entre lunette et boîte.'],
-  tapisserie:['Grande Tapisserie', 'Guilloché au pantographe, 1 156 pyramides.'],
+  tapisserie:['Grande Tapisserie', 'Guilloché au pantographe.'],
+  logo:['Logo AP appliqué', 'Or gris, posé sous l\u2019index de midi.'],
   date:['Guichet de date', 'Cadre poli, date du jour.'],
-  crown:['Couronne vissée', '36 cannelures, fond octogonal.'],
-  bracelet:['Bracelet intégré', 'Maillons satinés, chanfreins polis main.'],
-  balance:['Balancier à vis', '4 Hz, spiral bleui, sous vos yeux.'],
+  crown:['Couronne vissée', 'Gravée AP, cannelée.'],
+  bracelet:['Bracelet intégré', 'Maillons satinés, chanfreins polis.'],
+  balance:['Balancier', 'Calibre 4302, 4 Hz.'],
   rotor:['Masse en or 22 ct', 'Gravée, Côtes de Genève.'],
 };
 const hsEls = W.hotspots.map(h=>{
@@ -352,9 +355,9 @@ function renderThumbs(){
     composer.render(0);
     const img = canvas.toDataURL('image/jpeg', 0.9);
     return '<article class="coll-card" data-pick="' + k + '" style="--m:' + v.glow + '">' +
-      '<div class="cc-img"><img src="' + img + '" alt="NOCTÉA Octogone ' + v.name + ', ' + v.sub + '"></div>' +
-      '<div class="cc-body"><p class="cc-ref">Réf. 15.41-' + k.slice(0, 2).toUpperCase() + '</p><h3>' + v.name + '</h3><p class="cc-sub">' + v.sub + '</p>' +
-      '<div class="cc-foot"><span>Prix sur demande</span><button class="btn btn-line btn-sm" type="button">Examiner</button></div></div></article>';
+      '<div class="cc-img"><img src="' + img + '" alt="Rendu 3D Royal Oak ' + v.name + ', ' + v.sub + '"></div>' +
+      '<div class="cc-body"><p class="cc-ref">Audemars Piguet · ' + (k === 'acier' ? 'Réf. 15510ST' : 'Étude 3D') + '</p><h3>Royal Oak</h3><p class="cc-sub">' + v.sub + '</p>' +
+      '<div class="cc-foot"><span>Prix sur demande</span><button class="btn btn-line btn-sm" type="button">Examiner en 3D</button></div></div></article>';
   });
   grid.innerHTML = cards.join('');
   resize();
@@ -391,7 +394,7 @@ document.querySelectorAll('[data-count]').forEach(el=>{
 });
 
 const io = new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold:0.15 });
-document.querySelectorAll('.sec-head,.coll-grid,.figures,.specs,.craft-card,.rdv-form').forEach(el=>io.observe(el));
+document.querySelectorAll('.sec-head,.coll-grid,.figures,.specs,.craft-card,.rdv-form,.timeline').forEach(el=>io.observe(el));
 addEventListener('scroll', ()=>$('nav').classList.toggle('solid', scrollY > innerHeight * 0.5), { passive:true });
 
 $('rdvForm').addEventListener('submit', (e)=>{
@@ -408,7 +411,12 @@ $('rdvForm').addEventListener('submit', (e)=>{
   const bar = $('loaderBar');
   bar.style.width = '30%';
   try { await Promise.all(['600 112px "Cormorant Garamond"', '500 78px "Cormorant Garamond"', '500 34px "Jost"', '600 150px "Jost"'].map(f=>document.fonts.load(f))); } catch(e){}
-  bar.style.width = '60%';
+  bar.style.width = '50%';
+  try {
+    const font = await new FontLoader().loadAsync('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/fonts/helvetiker_bold.typeface.json');
+    W.addLogo(font, TextGeometry);
+  } catch(e){ /* sans la police, le cadran garde sa signature imprimee */ }
+  bar.style.width = '65%';
   await new Promise(r=>setTimeout(r, 30));
   buildFinishUI();
   renderThumbs();

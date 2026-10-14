@@ -1,5 +1,5 @@
-// NOCTÉA Octogone — montre 3D entierement procedurale (aucun modele a charger).
-// Hommage au design « lunette octogonale + bracelet integre » : boite tonneau,
+// Royal Oak (reference 15510ST) — reconstitution 3D entierement procedurale, a but
+// educatif, pour la fiche produit Deylo Shop (aucun modele a charger) : boite tonneau,
 // joint noir apparent, lunette octogonale satinee a chanfreins polis et 8 vis
 // hexagonales, cadran Grande Tapisserie en relief, guichet de date, index et
 // aiguilles luminescents, bracelet integre a maillons satines/polis, et au dos un
@@ -12,17 +12,17 @@ const TAU = Math.PI * 2;
 // ---------- Finitions ----------
 export const VARIANTS = {
   acier: {
-    name: 'Bleu Nuit', sub: 'Acier · cadran Grande Tapisserie bleu nuit',
+    name: 'Acier · cadran bleu', ref: '15510ST', sub: 'Acier inoxydable · Grande Tapisserie « Bleu Nuit, Nuage 50 »',
     kind: 'metal', metal: 0xdfe3e8, trim: 0xe9ecf0,
     dial: '#1b3263', print: '#f2f4f8', date: ['#f4f4f2', '#141414'], glow: '#5c7fd6',
   },
   or: {
-    name: 'Or Rose', sub: 'Or rose 18 carats · cadran tapisserie or rose',
+    name: 'Or rose', ref: '', sub: 'Or rose 18 carats · Grande Tapisserie or rose',
     kind: 'metal', metal: 0xe9b08f, trim: 0xf0bf9f,
     dial: '#c68d6d', print: '#3c2416', date: ['#f6efe8', '#2b1a10'], glow: '#e7a37c',
   },
   ceramique: {
-    name: 'Céramique', sub: 'Céramique noire · cadran ardoise',
+    name: 'Céramique noire', ref: '', sub: 'Céramique noire · cadran ardoise (version d\u2019étude)',
     kind: 'ceramic', metal: 0x0d0d0e, trim: 0xd9dde2,
     dial: '#2b2d31', print: '#eef0f3', date: ['#111214', '#eef0f3'], glow: '#8c96a8',
   },
@@ -81,13 +81,13 @@ function printTexture(v){
       g.beginPath(); g.moveTo(c + Math.cos(a) * r1, c + Math.sin(a) * r1); g.lineTo(c + Math.cos(a) * r2, c + Math.sin(a) * r2); g.stroke();
     }
     g.globalAlpha = 1;
-    g.font = '600 112px "Cormorant Garamond", Georgia, serif'; g.letterSpacing = '26px';
-    g.fillText('NOCTÉA', c + 13, c - c * 0.4);
-    g.font = '500 34px "Jost", Arial, sans-serif'; g.letterSpacing = '14px'; g.globalAlpha = 0.9;
-    g.fillText('OCTOGONE', c + 7, c - c * 0.29);
-    g.fillText('AUTOMATIQUE', c + 7, c + c * 0.36);
-    g.font = '400 26px "Jost", Arial, sans-serif'; g.letterSpacing = '8px'; g.globalAlpha = 0.75;
-    g.fillText('50 M · 165 FT', c + 4, c + c * 0.44);
+    // signature sous le logo AP applique (le logo lui-meme est en relief, voir addLogo)
+    g.font = '500 50px "Jost", Arial, sans-serif'; g.letterSpacing = '10px';
+    g.fillText('AUDEMARS PIGUET', c + 5, c - c * 0.4);
+    g.font = '500 30px "Jost", Arial, sans-serif'; g.letterSpacing = '10px'; g.globalAlpha = 0.92;
+    g.fillText('AUTOMATIC', c + 5, c + c * 0.4);
+    g.font = '400 20px "Jost", Arial, sans-serif'; g.letterSpacing = '6px'; g.globalAlpha = 0.8;
+    g.fillText('SWISS MADE', c + 3, c + c * 0.905);
   });
 }
 function flangeTexture(color, base){
@@ -146,7 +146,7 @@ function casebackTexture(){
     // satinage circulaire
     for(let r = c * 0.6; r < c; r += 2){ g.strokeStyle = 'rgba(' + (Math.random() < 0.5 ? '255,255,255' : '0,0,0') + ',' + (Math.random() * 0.08) + ')'; g.lineWidth = 1.5; g.beginPath(); g.arc(c, c, r, 0, TAU); g.stroke(); }
     g.fillStyle = 'rgba(40,42,46,.75)'; g.font = '500 44px "Jost", Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    const txt = 'NOCTÉA  ·  OCTOGONE  ·  RÉF. 15.41  ·  ÉTANCHE 50 M  ·  N° 0427 / 2026  ·  ';
+    const txt = 'AUDEMARS PIGUET  ·  ROYAL OAK  ·  STAINLESS STEEL  ·  WATER RESISTANT 50 M  ·  N° 0427  ·  ';
     const rr = c * 0.73, chars = [...txt];
     chars.forEach((ch, i)=>{
       const a = -Math.PI / 2 + (i / chars.length) * TAU;
@@ -226,6 +226,7 @@ export function createWatch(){
   M.satin = new THREE.MeshPhysicalMaterial({ metalness:1, roughness:0.3, anisotropy:0.85, anisotropyRotation:0, roughnessMap:brushTexture(false) });
   M.satinV = new THREE.MeshPhysicalMaterial({ metalness:1, roughness:0.3, anisotropy:0.85, anisotropyRotation:Math.PI / 2, roughnessMap:brushTexture(true) });
   M.polish = new THREE.MeshPhysicalMaterial({ metalness:1, roughness:0.06, clearcoat:0.4, clearcoatRoughness:0.04 });
+  M.flank = new THREE.MeshPhysicalMaterial({ metalness:1, roughness:0.34, anisotropy:0.7, anisotropyRotation:0, roughnessMap:brushTexture(false) });
   M.trim = new THREE.MeshPhysicalMaterial({ metalness:1, roughness:0.08 });             // vis, index, aiguilles (or gris/rose)
   M.gasket = new THREE.MeshStandardMaterial({ color:0x0a0a0b, roughness:0.55, metalness:0 });
   M.dial = new THREE.MeshPhysicalMaterial({ metalness:0.35, roughness:0.36, clearcoat:0.5, clearcoatRoughness:0.15, normalScale:new THREE.Vector2(0.9, 0.9) });
@@ -236,9 +237,9 @@ export function createWatch(){
   M.crystal = new THREE.MeshPhysicalMaterial({ transmission:1, roughness:0, ior:1.77, thickness:0.05, metalness:0, clearcoat:1, specularIntensity:1, envMapIntensity:1.6 });
   M.inner = new THREE.MeshStandardMaterial({ color:0x08080a, roughness:0.85, side:THREE.BackSide });
   M.plate = new THREE.MeshStandardMaterial({ map:perlageTexture(), metalness:0.85, roughness:0.36 });
-  M.bridge = new THREE.MeshStandardMaterial({ map:cotesTexture('#c9ccd1', [['CALIBRE N.02', 600, '500 44px "Jost", Arial, sans-serif'], ['32 RUBIS · AJUSTÉ 5 POSITIONS', 660, '400 28px "Jost", Arial, sans-serif']]), metalness:0.9, roughness:0.28 });
+  M.bridge = new THREE.MeshStandardMaterial({ map:cotesTexture('#c9ccd1', [['CALIBRE 4302', 600, '500 44px "Jost", Arial, sans-serif'], ['32 JEWELS · SWISS MADE', 660, '400 28px "Jost", Arial, sans-serif']]), metalness:0.9, roughness:0.28 });
   M.bridgeSide = new THREE.MeshStandardMaterial({ color:0xd7dadf, metalness:1, roughness:0.12 });
-  M.rotor = new THREE.MeshStandardMaterial({ map:cotesTexture('#d0a066', [['NOCTÉA', 300, '500 78px "Cormorant Garamond", Georgia, serif'], ['OR 22 CARATS', 372, '400 26px "Jost", Arial, sans-serif']]), metalness:1, roughness:0.22 });
+  M.rotor = new THREE.MeshStandardMaterial({ map:cotesTexture('#d0a066', [['AUDEMARS PIGUET', 300, '500 46px "Jost", Arial, sans-serif'], ['22K GOLD', 362, '400 26px "Jost", Arial, sans-serif']]), metalness:1, roughness:0.22 });
   M.gold = new THREE.MeshStandardMaterial({ color:0xdcae68, metalness:1, roughness:0.18 });
   M.ruby = new THREE.MeshPhysicalMaterial({ color:0xc0122f, roughness:0.04, metalness:0, clearcoat:1, transmission:0.35, thickness:0.04, ior:1.76 });
   M.blued = new THREE.MeshStandardMaterial({ color:0x1b3a9a, metalness:1, roughness:0.2 });
@@ -250,12 +251,20 @@ export function createWatch(){
 
   // --- Boite tonneau : faces satinees, flancs et chanfreins polis
   { const s = new THREE.Shape();
-    s.moveTo(-1.2, 2.1); s.lineTo(1.2, 2.1);
-    s.bezierCurveTo(1.66, 2.1, 2.03, 1.3, 2.03, 0); s.bezierCurveTo(2.03, -1.3, 1.66, -2.1, 1.2, -2.1);
-    s.lineTo(-1.2, -2.1); s.bezierCurveTo(-1.66, -2.1, -2.03, -1.3, -2.03, 0); s.bezierCurveTo(-2.03, 1.3, -1.66, 2.1, -1.2, 2.1);
-    s.holes.push(circlePath(1.5));
-    const g = extrude(s, 0.52, 0.05, 4, 48); g.translate(0, 0, -0.37);
-    add(g, [M.satinV, M.polish]);
+    const outline = (k, sh = new THREE.Shape())=>{
+      const X = 1.97 * k, Y = 2.08 * k, F = 1.18 * k;
+      sh.moveTo(-F, Y); sh.lineTo(F, Y);
+      sh.bezierCurveTo(F + 0.48 * k, Y, X, 1.3 * k, X, 0); sh.bezierCurveTo(X, -1.3 * k, F + 0.48 * k, -Y, F, -Y);
+      sh.lineTo(-F, -Y); sh.bezierCurveTo(-F - 0.48 * k, -Y, -X, -1.3 * k, -X, 0); sh.bezierCurveTo(-X, 1.3 * k, -F - 0.48 * k, Y, -F, Y);
+      sh.holes.push(circlePath(1.5));
+      return sh;
+    };
+    // corps : flancs satines verticaux, fond plat
+    const body = extrude(outline(1), 0.568, 0, 1, 64); body.translate(0, 0, -0.42);
+    add(body, [M.satinV, M.flank]);
+    // arete superieure : chanfrein poli a 45 degres, dessus satine
+    const top = extrude(outline(0.975), 0.002, 0.05, 1, 64); top.translate(0, 0, 0.148);
+    add(top, [M.satinV, M.polish]);
   }
   add(new THREE.CylinderGeometry(1.5, 1.5, 0.6, 96, 1, true).rotateX(Math.PI / 2).translate(0, 0, -0.1), M.inner);
   // --- Joint noir apparent entre boite et lunette
@@ -302,8 +311,8 @@ export function createWatch(){
     const l = new THREE.Mesh(extrude(handShape(lumeLen, w * 0.48, 0), 0.006, 0), M.lume); l.position.set(0, len - lumeLen - w * 0.6, 0.02); piv.add(l);
     return piv;
   };
-  hands.h = mkHand(0.78, 0.048, 0.14, 0.215, 0.5);
-  hands.m = mkHand(1.22, 0.038, 0.18, 0.248, 0.86);
+  hands.h = mkHand(0.8, 0.068, 0.16, 0.215, 0.52);
+  hands.m = mkHand(1.24, 0.052, 0.2, 0.248, 0.88);
   hands.s = new THREE.Group(); hands.s.position.z = 0.282; watch.add(hands.s);
   { const s = new THREE.Shape(); s.moveTo(-0.009, -0.34); s.lineTo(0.009, -0.34); s.lineTo(0.005, 1.3); s.lineTo(-0.005, 1.3); s.closePath();
     hands.s.add(shadowy(new THREE.Mesh(extrude(s, 0.006, 0.002, 2), M.trim)));
@@ -320,7 +329,9 @@ export function createWatch(){
     g.computeVertexNormals(); g.rotateZ(Math.PI / 2);
     const crown = add(g, M.polish); crown.position.set(2.33, 0, -0.08);
     const tube = add(new THREE.CylinderGeometry(0.13, 0.13, 0.16, 40).rotateZ(Math.PI / 2), M.polish); tube.position.set(2.16, 0, -0.08);
-    const cap = add(extrude(roundedPoly(8, 0.15, 0.03, Math.PI / 8), 0.01, 0.006, 2), M.satin); cap.rotation.y = Math.PI / 2; cap.position.set(2.452, 0, -0.08); }
+    const capTex = canvasTex(256, 256, (g, W)=>{ g.fillStyle = '#d4d7db'; g.fillRect(0, 0, W, W); g.fillStyle = 'rgba(30,30,34,.85)'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 120px Arial, sans-serif'; g.fillText('AP', W / 2, W / 2 + 6); });
+    M.crownCap = new THREE.MeshStandardMaterial({ map:capTex, metalness:1, roughness:0.25 });
+    const cap = add(new THREE.CircleGeometry(0.18, 48), M.crownCap); cap.rotation.y = Math.PI / 2; cap.rotation.z = Math.PI / 2; cap.position.set(2.452, 0, -0.08); }
 
   // --- Fond : 8 vis a fente, couronne gravee, glace saphir
   { const ring = shadowy(new THREE.Mesh(new THREE.RingGeometry(1.27, 2.02, 160, 1).rotateY(Math.PI), M.caseback)); ring.position.z = -0.425; watch.add(ring);
@@ -418,7 +429,7 @@ export function createWatch(){
     if(!cache[key]) cache[key] = { tap:tapisserieMaps(v.dial), print:printTexture(v), flange:flangeTexture(v.print, shade(v.dial, 0.75)), date:dateTexture(v) };
     const t = cache[key];
     const metal = new THREE.Color(v.metal);
-    [M.satin, M.satinV, M.polish].forEach(m=>{
+    [M.satin, M.satinV, M.polish, M.flank].forEach(m=>{
       m.color.copy(metal);
       if(v.kind === 'ceramic'){ m.metalness = 0; m.clearcoat = 1; m.clearcoatRoughness = m === M.polish ? 0.03 : 0.25; m.roughness = m === M.polish ? 0.08 : 0.42; m.anisotropy = m === M.polish ? 0 : 0.5; }
       else { m.metalness = 1; m.clearcoat = m === M.polish ? 0.4 : 0; m.clearcoatRoughness = 0.04; m.roughness = m === M.polish ? 0.06 : 0.36; m.anisotropy = m === M.polish ? 0 : 0.6; }
@@ -456,6 +467,7 @@ export function createWatch(){
     { id:'screws', pos:new THREE.Vector3(Math.cos(Math.PI / 8) * 1.72, Math.sin(Math.PI / 8) * 1.72, 0.45), normal:new THREE.Vector3(0, 0, 1) },
     { id:'gasket', pos:new THREE.Vector3(-1.86, -0.6, 0.22), normal:new THREE.Vector3(-1, -0.3, 0.6) },
     { id:'tapisserie', pos:new THREE.Vector3(-0.55, -0.62, 0.17), normal:new THREE.Vector3(0, 0, 1) },
+    { id:'logo', pos:new THREE.Vector3(0.16, 0.66, 0.19), normal:new THREE.Vector3(0, 0, 1) },
     { id:'date', pos:new THREE.Vector3(1.0, 0, 0.19), normal:new THREE.Vector3(0, 0, 1) },
     { id:'crown', pos:new THREE.Vector3(2.46, 0, -0.08), normal:new THREE.Vector3(1, 0, 0) },
     { id:'bracelet', pos:new THREE.Vector3(0, 2.5, 0.02), normal:new THREE.Vector3(0, 0.35, 1) },
@@ -463,5 +475,12 @@ export function createWatch(){
     { id:'rotor', pos:new THREE.Vector3(-0.5, -0.75, -0.45), normal:new THREE.Vector3(0, 0, -1) },
   ];
 
-  return { root, watch, setVariant, update, kickRotor, setNight, hotspots };
+  // Logo « AP » applique en or gris sous l'index de midi, extrude et facette
+  function addLogo(font, TextGeometry){
+    const g = new TextGeometry('AP', { font, size:0.15, depth:0.016, curveSegments:6, bevelEnabled:true, bevelThickness:0.006, bevelSize:0.005, bevelSegments:2 });
+    g.computeBoundingBox(); const b = g.boundingBox; g.translate(-(b.max.x + b.min.x) / 2, -(b.max.y + b.min.y) / 2, 0);
+    const m = add(g, M.trim); m.position.set(0, 0.66, 0.165);
+  }
+
+  return { root, watch, setVariant, update, kickRotor, setNight, hotspots, addLogo };
 }

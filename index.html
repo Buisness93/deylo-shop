@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>NOCTÉA — Octogone</title>
-<meta name="description" content="NOCTÉA Octogone, maison horlogère fictive : explorez en 3D une montre à lunette octogonale, cadran Grande Tapisserie et bracelet intégré, jusqu'au calibre visible par le fond saphir.">
+<title>Royal Oak en 3D — Deylo Shop</title>
+<meta name="description" content="Deylo Shop, revendeur indépendant de montres de prestige : fiche éducative de l'Audemars Piguet Royal Oak, reconstituée en 3D, de la lunette à huit vis au calibre 4302.">
 <meta name="theme-color" content="#0b0a09">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%230b0a09' stroke='%23c8a97e' stroke-width='3'/%3E%3Cpath d='M32 14v18l11 7' stroke='%23efe8dc' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0a09'/%3E%3Ctext x='32' y='43' font-family='Georgia' font-size='32' text-anchor='middle' fill='%23c8a97e'%3ED%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script type="importmap">
 { "imports": {
@@ -21,63 +21,63 @@
 <body>
 
 <div class="loader" id="loader" aria-hidden="true">
-  <div class="loader-mark">NOCTÉA</div>
+  <div class="loader-mark">DEYLO SHOP</div>
   <div class="loader-line"><i id="loaderBar"></i></div>
-  <div class="loader-sub">Haute horlogerie · depuis 1897</div>
+  <div class="loader-sub">Montres de prestige · fiche éducative</div>
 </div>
 
 <header class="nav" id="nav">
-  <a href="#top" class="brand" aria-label="NOCTÉA, retour en haut">NOCTÉA</a>
+  <a href="#top" class="brand" aria-label="Deylo Shop, retour en haut">DEYLO<span>SHOP</span></a>
   <nav class="nav-links" aria-label="Navigation principale">
-    <a href="#collection">Collection</a>
-    <a href="#calibre">Calibre</a>
-    <a href="#savoir-faire">Savoir-faire</a>
+    <a href="#versions">Versions</a>
+    <a href="#histoire">Histoire</a>
+    <a href="#calibre">Calibre 4302</a>
+    <a href="#savoir-faire">Finitions</a>
   </nav>
-  <a href="#rendez-vous" class="nav-cta">Rendez-vous privé</a>
+  <a href="#rendez-vous" class="nav-cta">Nous contacter</a>
 </header>
 
 <main id="top">
-  <!-- Scene 3D collante : le defilement fait tourner la camera autour de la montre -->
-  <section class="stage" id="stage" aria-label="La montre en détail">
+  <section class="stage" id="stage" aria-label="La Royal Oak en détail">
     <div class="stage-sticky" id="stageSticky">
+      <canvas id="gl" aria-label="Reconstitution 3D de l'Audemars Piguet Royal Oak 15510ST" role="img"></canvas>
       <div class="stage-glow" aria-hidden="true"></div>
-      <canvas id="gl" aria-label="Montre NOCTÉA Calibre N.01 en trois dimensions" role="img"></canvas>
       <div class="hotspots" id="hotspots"></div>
 
       <div class="chapters" id="chapters">
         <article class="chapter ch-hero" data-ch="0">
-          <p class="eyebrow">Octogone · Référence 15.41</p>
-          <h1>L'acier,<br><em>taillé en joyau.</em></h1>
-          <p class="lede">Une lunette à huit pans tenue par huit vis, un cadran Grande Tapisserie, un bracelet qui prolonge la boîte sans rupture. Une montre de sport, et pourtant un bijou.</p>
-          <div class="finish-pick" id="finishPick" role="radiogroup" aria-label="Finition"></div>
+          <p class="eyebrow">Audemars Piguet · Royal Oak 15510ST · 41 mm</p>
+          <h1>Royal Oak,<br><em>pièce par pièce.</em></h1>
+          <p class="lede">La montre qui a inventé le sport-chic en 1972, reconstituée en 3D par Deylo Shop pour comprendre ce qui fait sa réputation : de ses huit vis à son calibre 4302.</p>
+          <div class="finish-pick" id="finishPick" role="radiogroup" aria-label="Version"></div>
           <div class="hero-actions">
-            <button class="btn btn-gold" id="btnAtelier" type="button">Entrer dans l'atelier</button>
-            <a class="btn btn-line" href="#collection">La collection</a>
+            <button class="btn btn-gold" id="btnAtelier" type="button">L'examiner en 3D</button>
+            <a class="btn btn-line" href="#rendez-vous">Être recontacté</a>
           </div>
           <p class="live-time"><span>Heure locale</span><b id="liveTime">--:--:--</b><small>Les aiguilles et la date indiquent les vôtres.</small></p>
         </article>
         <article class="chapter ch-left" data-ch="1">
           <p class="eyebrow">I — La lunette</p>
-          <h2>Huit pans,<br><em>huit vis.</em></h2>
-          <p>Le dessus est satiné en lignes droites, les chanfreins sont polis miroir à la main. Huit vis hexagonales en or gris, toutes alignées dans le même sens, la serrent contre un joint noir laissé volontairement apparent.</p>
-          <dl class="mini-specs"><div><dt>Vis</dt><dd>8, or gris 18 ct</dd></div><div><dt>Chanfreins</dt><dd>Polis main, 0,4 mm</dd></div></dl>
+          <h2>Huit vis,<br><em>un hublot.</em></h2>
+          <p>Gérald Genta s'inspire du hublot d'un casque de scaphandrier. La lunette octogonale est satinée sur le dessus et polie sur les chanfreins ; huit vis hexagonales en or gris, toutes alignées, la serrent contre un joint noir volontairement apparent.</p>
+          <dl class="mini-specs"><div><dt>Vis</dt><dd>8, or gris, alignées</dd></div><div><dt>Finition</dt><dd>Satiné, chanfreins polis</dd></div></dl>
         </article>
         <article class="chapter ch-right" data-ch="2">
           <p class="eyebrow">II — Le cadran</p>
           <h2>Grande<br><em>Tapisserie.</em></h2>
-          <p>Plus d'un millier de petites pyramides tracées au pantographe, puis galvanisées. Selon l'angle, la lumière court de case en case. Index appliqués en or, Super-LumiNova, guichet de date à trois heures.</p>
-          <dl class="mini-specs"><div><dt>Guillochage</dt><dd>Pantographe, 1 156 cases</dd></div><div><dt>Index</dt><dd>Or gris, luminescents</dd></div></dl>
+          <p>Le motif quadrillé est guilloché au pantographe : une grille de petites pyramides qui fait courir la lumière. Logo AP appliqué en or gris, index et aiguilles luminescents, guichet de date à trois heures.</p>
+          <dl class="mini-specs"><div><dt>Motif</dt><dd>Grande Tapisserie</dd></div><div><dt>Index</dt><dd>Or gris, luminescents</dd></div></dl>
         </article>
         <article class="chapter ch-left" data-ch="3">
-          <p class="eyebrow">III — Le calibre</p>
-          <h2>Un cœur<br><em>à quatre hertz.</em></h2>
-          <p>Par le fond saphir : platine perlée, ponts aux Côtes de Genève, rouages dorés, roue d'échappement bleuie qui avance huit fois par seconde, balancier à vis et masse oscillante en or 22 carats.</p>
-          <dl class="mini-specs"><div><dt>Fréquence</dt><dd>28 800 alt/h</dd></div><div><dt>Réserve</dt><dd>70 heures</dd></div></dl>
+          <p class="eyebrow">III — Le calibre 4302</p>
+          <h2>Le moteur<br><em>sous le saphir.</em></h2>
+          <p>Fond saphir vissé : platine perlée, ponts aux Côtes de Genève, rouages, roue d'échappement qui avance huit fois par seconde, balancier à 4 Hz et masse oscillante en or 22 carats ajourée et gravée.</p>
+          <dl class="mini-specs"><div><dt>Fréquence</dt><dd>4 Hz · 28 800 alt/h</dd></div><div><dt>Réserve</dt><dd>70 heures</dd></div></dl>
         </article>
         <article class="chapter ch-right" data-ch="4">
           <p class="eyebrow">IV — Le bracelet</p>
           <h2>Intégré,<br><em>jamais ajouté.</em></h2>
-          <p>Le bracelet naît de la boîte. Maillons latéraux satinés, maillons centraux polis, chaque arête reprise à la main : plus de cent cinquante facettes qui s'affinent jusqu'à la boucle.</p>
+          <p>Le bracelet prolonge la boîte sans rupture. Maillons trapézoïdaux satinés, petits maillons centraux polis, et un effilement continu jusqu'à la boucle : c'est lui qui fait tomber la montre au poignet.</p>
           <div class="hero-actions"><button class="btn btn-gold" id="btnAtelier2" type="button">L'examiner sous tous les angles</button></div>
         </article>
       </div>
@@ -91,14 +91,13 @@
       </ol>
       <div class="scroll-cue" id="scrollCue" aria-hidden="true"><i></i>Faire défiler</div>
 
-      <!-- Atelier : inspection libre -->
       <div class="atelier" id="atelier" hidden>
         <div class="at-top">
-          <div><p class="eyebrow">L'atelier</p><p class="at-title" id="atTitle">Octogone</p></div>
-          <button class="at-close" id="btnClose" type="button" aria-label="Quitter l'atelier">Quitter <span aria-hidden="true">✕</span></button>
+          <div><p class="eyebrow">Examen 3D</p><p class="at-title" id="atTitle">Royal Oak</p></div>
+          <button class="at-close" id="btnClose" type="button" aria-label="Quitter l'examen 3D">Quitter <span aria-hidden="true">✕</span></button>
         </div>
         <div class="at-side">
-          <p class="at-label">Finition</p>
+          <p class="at-label">Version</p>
           <div class="at-finishes" id="atFinishes"></div>
           <label class="at-toggle"><input type="checkbox" id="tglNotes" checked> Annotations</label>
           <label class="at-toggle"><input type="checkbox" id="tglNight"> Mode nuit</label>
@@ -117,19 +116,34 @@
     </div>
   </section>
 
-  <section class="section collection" id="collection">
+  <section class="section collection" id="versions">
     <header class="sec-head">
-      <p class="eyebrow">La collection</p>
-      <h2>Trois matières,<br><em>une seule silhouette.</em></h2>
+      <p class="eyebrow">Les versions</p>
+      <h2>Une silhouette,<br><em>trois matières.</em></h2>
+      <p class="sec-lede">Rendus 3D réalisés à partir de notre reconstitution. Pour la disponibilité d'une pièce, son état et son prix, contactez-nous : chaque montre est présentée avec son historique.</p>
     </header>
     <div class="coll-grid" id="collGrid"></div>
   </section>
 
+  <section class="section histoire" id="histoire">
+    <header class="sec-head">
+      <p class="eyebrow">Comprendre la Royal Oak</p>
+      <h2>Une montre d'acier<br><em>au prix de l'or.</em></h2>
+      <p class="sec-lede">En 1972, une montre de luxe se devait d'être en or, fine et discrète. La Royal Oak arrive en acier, avec des vis apparentes et un bracelet intégré. Le pari paraît fou ; il crée une catégorie entière.</p>
+    </header>
+    <ol class="timeline">
+      <li><b>1970</b><p>Audemars Piguet commande à Gérald Genta une montre de sport en acier. La légende veut qu'il en dessine l'essentiel en une nuit.</p></li>
+      <li><b>1972</b><p>Présentation de la référence 5402ST au salon de Bâle : 39 mm, très plate, calibre automatique 2121, cadran « Petite Tapisserie ». On la surnomme vite « Jumbo ».</p></li>
+      <li><b>1990–2000</b><p>La famille s'agrandit : chronographes, Royal Oak Offshore plus massive, versions or et platine. La silhouette, elle, ne change presque pas.</p></li>
+      <li><b>2022</b><p>Pour les cinquante ans, la Royal Oak 41 mm adopte le calibre 4302 (70 heures de réserve) : c'est la référence 15510 reconstituée sur cette page.</p></li>
+    </ol>
+  </section>
+
   <section class="section calibre" id="calibre">
     <header class="sec-head">
-      <p class="eyebrow">Calibre N.02</p>
-      <h2>La mécanique<br><em>comme écriture.</em></h2>
-      <p class="sec-lede">Conçu, décoré et réglé dans nos ateliers. Chaque mouvement est ajusté en cinq positions avant d'être emboîté, puis porté vingt et un jours avant de quitter la maison.</p>
+      <p class="eyebrow">Calibre 4302</p>
+      <h2>La mécanique<br><em>en chiffres.</em></h2>
+      <p class="sec-lede">Le calibre automatique qui équipe la Royal Oak 15510, visible par le fond saphir. Ces chiffres sont ceux communiqués pour la référence ; notre modèle 3D en reprend l'architecture générale, pas chaque composant.</p>
     </header>
     <div class="figures">
       <div class="fig"><b data-count="70">0</b><span>heures de réserve de marche</span></div>
@@ -139,44 +153,44 @@
     </div>
     <table class="specs">
       <tbody>
-        <tr><th>Boîte</th><td>Ø 41 mm · épaisseur 10,4 mm · lunette octogonale vissée, joint apparent</td></tr>
-        <tr><th>Matières</th><td>Acier satiné-poli, or rose 18 carats ou céramique noire</td></tr>
-        <tr><th>Cadran</th><td>Grande Tapisserie guillochée, index appliqués en or, guichet de date à 3 h</td></tr>
-        <tr><th>Glaces</th><td>Saphir traité antireflet, fond saphir tenu par huit vis</td></tr>
-        <tr><th>Mouvement</th><td>Calibre N.02 automatique, masse oscillante en or 22 carats, 32 rubis, 257 composants</td></tr>
-        <tr><th>Précision</th><td>−2 / +4 secondes par jour, réglée en cinq positions</td></tr>
-        <tr><th>Étanchéité</th><td>5 bar (50 mètres), couronne vissée</td></tr>
-        <tr><th>Bracelet</th><td>Intégré, maillons satinés et polis, boucle déployante à triple lame</td></tr>
+        <tr><th>Référence</th><td>Royal Oak « Selfwinding » 15510ST, 41 mm</td></tr>
+        <tr><th>Boîte</th><td>Ø 41 mm · épaisseur 10,4 mm · lunette octogonale, 8 vis hexagonales, joint apparent</td></tr>
+        <tr><th>Cadran</th><td>Grande Tapisserie, logo AP et index appliqués en or gris, date à 3 h</td></tr>
+        <tr><th>Glaces</th><td>Saphir antireflet, fond saphir vissé</td></tr>
+        <tr><th>Mouvement</th><td>Calibre 4302, automatique, 4 Hz, 32 rubis, 257 composants, 70 h de réserve</td></tr>
+        <tr><th>Étanchéité</th><td>50 mètres</td></tr>
+        <tr><th>Bracelet</th><td>Intégré, acier satiné et poli, boucle déployante AP</td></tr>
       </tbody>
     </table>
   </section>
 
   <section class="section craft" id="savoir-faire">
     <header class="sec-head">
-      <p class="eyebrow">Savoir-faire</p>
+      <p class="eyebrow">Les finitions à repérer</p>
       <h2>Ce que l'œil devine,<br><em>la main l'a voulu.</em></h2>
+      <p class="sec-lede">Les détails qu'un connaisseur regarde en premier, et que vous pouvez inspecter dans l'examen 3D.</p>
     </header>
     <div class="craft-grid">
-      <article class="craft-card"><div class="swatch sw-tapisserie" aria-hidden="true"></div><h3>Grande Tapisserie</h3><p>Le pantographe reproduit à l'échelle un motif dessiné en grand. Chaque case est une pyramide tronquée, et chaque cadran demande une journée.</p></article>
-      <article class="craft-card"><div class="swatch sw-satin" aria-hidden="true"></div><h3>Satiné et poli</h3><p>Le satinage se fait d'un seul geste, dans un seul sens. Le chanfrein qui le borde est poli à la main, sans jamais déborder sur la surface voisine.</p></article>
-      <article class="craft-card"><div class="swatch sw-cotes" aria-hidden="true"></div><h3>Côtes de Genève</h3><p>Des vagues régulières tracées à la meule de buis sur les ponts. Invisibles une fois la montre fermée, sauf pour qui la retourne.</p></article>
-      <article class="craft-card"><div class="swatch sw-perlage" aria-hidden="true"></div><h3>Perlage</h3><p>Des milliers de petits cercles qui se chevauchent sur la platine, pour qu'elle ne réfléchisse jamais deux fois la même lumière.</p></article>
+      <article class="craft-card"><div class="swatch sw-tapisserie" aria-hidden="true"></div><h3>Grande Tapisserie</h3><p>Une grille régulière de pyramides tronquées, guillochée au pantographe. Le reflet doit courir de case en case, sans zone floue.</p></article>
+      <article class="craft-card"><div class="swatch sw-satin" aria-hidden="true"></div><h3>Satiné et poli</h3><p>Le satinage va dans un seul sens ; le chanfrein qui le borde est poli miroir, avec une arête nette. C'est la signature de la boîte et du bracelet.</p></article>
+      <article class="craft-card"><div class="swatch sw-cotes" aria-hidden="true"></div><h3>Côtes de Genève</h3><p>Des vagues régulières tracées sur les ponts et la masse oscillante, visibles par le fond saphir.</p></article>
+      <article class="craft-card"><div class="swatch sw-perlage" aria-hidden="true"></div><h3>Perlage</h3><p>De petits cercles qui se chevauchent sur la platine, pour qu'elle ne réfléchisse jamais deux fois la même lumière.</p></article>
     </div>
   </section>
 
   <section class="section rdv" id="rendez-vous">
     <div class="rdv-in">
       <header class="sec-head">
-        <p class="eyebrow">Rendez-vous privé</p>
-        <h2>La voir,<br><em>la porter.</em></h2>
-        <p class="sec-lede">Nos conseillers vous reçoivent en salon, sur rendez-vous, pour une présentation de la collection au poignet.</p>
+        <p class="eyebrow">Deylo Shop</p>
+        <h2>Une Royal Oak<br><em>vous intéresse ?</em></h2>
+        <p class="sec-lede">Dites-nous quelle version vous cherchez : nous revenons vers vous avec les pièces disponibles, leur état et leur historique.</p>
       </header>
       <form class="rdv-form" id="rdvForm" novalidate>
         <label><span>Nom</span><input name="nom" autocomplete="name" required></label>
         <label><span>Adresse e-mail</span><input name="email" type="email" autocomplete="email" required></label>
-        <label><span>Salon</span><select name="salon"><option>Genève — Rue du Rhône</option><option>Paris — Place Vendôme</option><option>Tokyo — Ginza</option></select></label>
-        <label><span>Modèle souhaité</span><select name="modele" id="rdvModel"></select></label>
-        <button class="btn btn-gold" type="submit">Demander un rendez-vous</button>
+        <label><span>Version recherchée</span><select name="modele" id="rdvModel"></select></label>
+        <label><span>Budget indicatif</span><select name="budget"><option>À discuter</option><option>Moins de 50 000 €</option><option>50 000 à 80 000 €</option><option>Plus de 80 000 €</option></select></label>
+        <button class="btn btn-gold" type="submit">Être recontacté</button>
         <p class="rdv-msg" id="rdvMsg" role="status"></p>
       </form>
     </div>
@@ -184,10 +198,10 @@
 </main>
 
 <footer class="foot">
-  <div class="foot-brand">NOCTÉA</div>
-  <p>Maison fictive, créée pour un site de démonstration. Aucune montre n'est en vente et aucune donnée saisie n'est envoyée.</p>
-  <p>Le dessin de l'Octogone rend hommage à la Royal Oak d'Audemars Piguet, imaginée par Gérald Genta en 1972. Ce site n'a aucun lien avec Audemars Piguet.</p>
-  <p class="foot-small">Montre modélisée et animée en temps réel avec three.js.</p>
+  <div class="foot-brand">DEYLO SHOP</div>
+  <p>Revendeur indépendant de montres de prestige. Deylo Shop n'est ni affilié à Audemars Piguet, ni distributeur agréé de la marque.</p>
+  <p>Audemars Piguet, Royal Oak et le logo AP sont des marques d'Audemars Piguet Holding SA. La montre affichée est une reconstitution 3D à but éducatif, pas une photo de produit, et peut différer de l'original dans ses détails.</p>
+  <p class="foot-small">Site de démonstration : le formulaire n'envoie aucune donnée. Rendu en temps réel avec three.js.</p>
 </footer>
 
 <script type="module" src="js/main.js"></script>
