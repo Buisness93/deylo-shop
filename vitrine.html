@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vitrine 3D — Deylo Shop</title>
+<meta name="description" content="Deylo Shop, revendeur indépendant de montres de prestige : vitrine 3D de Rolex, Audemars Piguet et Richard Mille, à examiner sous tous les angles.">
+<meta name="theme-color" content="#0b0a09">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0a09'/%3E%3Ctext x='32' y='43' font-family='Georgia' font-size='32' text-anchor='middle' fill='%23c8a97e'%3ED%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=9">
+<link rel="stylesheet" href="css/vitrine.css?v=1">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body class="vitrine">
+<header class="nav solid" id="nav">
+  <a href="index.html" class="brand" aria-label="Deylo Shop, accueil">DEYLO<span>SHOP</span></a>
+  <nav class="nav-links" aria-label="Navigation principale">
+    <a href="vitrine.html" aria-current="page">Vitrine 3D</a>
+    <a href="index.html">Royal Oak expliquée</a>
+  </nav>
+  <a href="index.html#rendez-vous" class="nav-cta">Nous contacter</a>
+</header>
+
+<main class="vt">
+  <aside class="vt-list" aria-label="Montres">
+    <p class="eyebrow">Vitrine 3D</p>
+    <h1>Pièces<br><em>à examiner.</em></h1>
+    <div id="vtCards" class="vt-cards"></div>
+  </aside>
+
+  <section class="vt-stage" aria-label="Montre en 3D">
+    <canvas id="vtGl" aria-label="Montre en trois dimensions" role="img"></canvas>
+    <div class="vt-glow" aria-hidden="true"></div>
+    <div class="vt-state" id="vtState" hidden></div>
+    <div class="vt-head">
+      <p class="eyebrow" id="vtBrand">—</p>
+      <h2 id="vtModel">—</h2>
+      <p class="vt-sub" id="vtSub"></p>
+    </div>
+    <div class="vt-tools">
+      <div class="at-views" id="vtViews" role="toolbar" aria-label="Points de vue">
+        <button type="button" data-view="front" class="on">Face</button>
+        <button type="button" data-view="three">Trois-quarts</button>
+        <button type="button" data-view="side">Profil</button>
+        <button type="button" data-view="back">Dos</button>
+      </div>
+      <label class="at-toggle"><input type="checkbox" id="vtSpin" checked> Rotation lente</label>
+    </div>
+    <p class="vt-credit" id="vtCredit"></p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-brand">DEYLO SHOP</div>
+  <p>Revendeur indépendant de montres de prestige, non affilié aux marques présentées. Rolex, Audemars Piguet, Royal Oak et Richard Mille sont des marques de leurs propriétaires respectifs.</p>
+  <p>Les modèles 3D sont des créations de leurs auteurs, crédités sous chaque montre, utilisées selon leur licence Creative Commons. Ce ne sont pas des photos de produits.</p>
+</footer>
+
+<script type="module" src="js/vitrine.js?v=1"></script>
+</body>
+</html>

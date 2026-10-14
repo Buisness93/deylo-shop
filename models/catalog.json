@@ -1,0 +1,44 @@
+{
+  "note": "Chaque entree pointe vers un dossier dans models/. Deposer le glTF telecharge sur Sketchfab (scene.gltf + scene.bin + textures/) dans le dossier indique par 'path'.",
+  "watches": [
+    {
+      "id": "rolex-daydate",
+      "brand": "Rolex",
+      "model": "Day-Date",
+      "sub": "Or gris · cadran vert · bracelet Président",
+      "path": "models/rolex-daydate/scene.gltf",
+      "title": "Rolex Datejust",
+      "author": "Yevhen Artamonov",
+      "source": "https://sketchfab.com/3d-models/rolex-datejust-9ad3e4c91e91405d9fc526c8ef496d0e",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial": true
+    },
+    {
+      "id": "ap-royaloak-tourbillon",
+      "brand": "Audemars Piguet",
+      "model": "Royal Oak Tourbillon",
+      "sub": "Acier · Grande Tapisserie · tourbillon à 6 h",
+      "path": "models/ap-royaloak-tourbillon/scene.gltf",
+      "title": "Audemars Piguet Royal Oak Tourbillon",
+      "author": "VTX",
+      "source": "https://sketchfab.com/3d-models/audemars-piguet-royal-oak-tourbillon-e71b6eec1f8e4f408e816c7360219c90",
+      "license": "CC BY-NC-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "commercial": false
+    },
+    {
+      "id": "rm011",
+      "brand": "Richard Mille",
+      "model": "RM 011",
+      "sub": "Boîte tonneau · chronographe flyback squelette",
+      "path": "models/rm011/scene.gltf",
+      "title": "Richard Mille RM011 Low Poly",
+      "author": "Denis V",
+      "source": "https://sketchfab.com/3d-models/richard-mille-rm011-low-poly-5d9f94e4f5034d8cba3ac4b05dbc06ad",
+      "license": "CC BY-NC 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "commercial": false
+    }
+  ]
+}
