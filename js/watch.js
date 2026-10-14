@@ -285,9 +285,9 @@ export function createWatch(){
   // --- Boite tonneau : faces satinees, flancs et chanfreins polis
   { const s = new THREE.Shape();
     const outline = (k, sh = new THREE.Shape())=>{
-      const P = [[-1.52, 2.35], [1.52, 2.35], [2.09, 1.1], [2.09, -1.1], [1.52, -2.35], [-1.52, -2.35], [-2.09, -1.1], [-2.09, 1.1]]
+      const P = [[-1.45, 2.33], [0, 2.38], [1.45, 2.33], [1.97, 1.32], [2.11, 0], [1.97, -1.32], [1.45, -2.33], [0, -2.38], [-1.45, -2.33], [-1.97, -1.32], [-2.11, 0], [-1.97, 1.32]]
         .map(([x, y])=>new THREE.Vector2(x * k, y * k));
-      roundedFromPoints(P, 0.16 * k, sh);
+      roundedFromPoints(P, 0.34 * k, sh);
       sh.holes.push(circlePath(1.5));
       return sh;
     };
@@ -300,10 +300,10 @@ export function createWatch(){
   }
   add(new THREE.CylinderGeometry(1.5, 1.5, 0.6, 96, 1, true).rotateX(Math.PI / 2).translate(0, 0, -0.1), M.inner);
   // --- Joint noir apparent entre boite et lunette
-  { const s = roundedPoly(8, 2.06, 0.4, Math.PI / 8); s.holes.push(circlePath(1.5));
+  { const s = roundedPoly(8, 2.07, 0.58, Math.PI / 8); s.holes.push(circlePath(1.5));
     const g = extrude(s, 0.045, 0, 1, 64); g.translate(0, 0, 0.2); add(g, M.gasket); }
   // --- Lunette octogonale (plats a 12/3/6/9 h) : dessus satine, chanfreins polis
-  { const s = roundedPoly(8, 1.97, 0.36, Math.PI / 8); s.holes.push(circlePath(1.47));
+  { const s = roundedPoly(8, 1.98, 0.54, Math.PI / 8); s.holes.push(circlePath(1.47));
     const g = extrude(s, 0.1, 0.038, 5, 96); g.translate(0, 0, 0.283);
     add(g, [M.satin, M.polish]); }
   // --- 8 vis hexagonales en or gris, toutes alignees dans le meme sens (detail d'origine)
@@ -429,15 +429,15 @@ export function createWatch(){
       const N = new THREE.Vector3(0, dir * Math.sin(a), Math.cos(a)).normalize();
       return { P, m:new THREE.Matrix4().makeBasis(new THREE.Vector3(dir, 0, 0), T, N) };
     };
-    const centerGeo = extrude(roundedRect(0.5, 0.3, 0.07), 0.16, 0.035, 4); centerGeo.translate(0, 0, -0.08);
+    const centerGeo = extrude(roundedRect(0.48, 0.28, 0.12), 0.14, 0.05, 5); centerGeo.translate(0, 0, -0.08);
     const sideCache = {};
     [1, -1].forEach(dir=>{
       for(let i = 0; i < rows; i++){
         const f = i / (rows - 1), w = 3.0 - 0.5 * f, th = 0.21 - 0.03 * f;
         const ws = (w - 0.62) / 2, key = ws.toFixed(3) + th.toFixed(3);
         if(!sideCache[key]){
-          const s = new THREE.Shape(); s.moveTo(-ws / 2, -0.23); s.lineTo(ws / 2, -0.23); s.lineTo(ws / 2 - 0.02, 0.23); s.lineTo(-ws / 2 + 0.02, 0.23); s.closePath();
-          const g = extrude(s, th, 0.03, 4, 4); g.translate(0, 0, -th / 2); sideCache[key] = g;
+          const s = roundedFromPoints([[-ws / 2, -0.21], [ws / 2, -0.21], [ws / 2 - 0.03, 0.21], [-ws / 2 + 0.03, 0.21]].map(([x, y])=>new THREE.Vector2(x, y)), 0.09);
+          const g = extrude(s, th - 0.04, 0.05, 5, 8); g.translate(0, 0, -(th - 0.04) / 2); sideCache[key] = g;
         }
         const { P, m } = frame(a0 + i * da, dir);
         [-1, 1].forEach(side=>{

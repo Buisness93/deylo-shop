@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { createWatch, VARIANTS } from './watch.js?v=7';
+import { createWatch, VARIANTS } from './watch.js?v=9';
 
 const $ = (id)=>document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
