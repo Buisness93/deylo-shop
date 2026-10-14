@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { createWatch, VARIANTS } from './watch.js';
+import { createWatch, VARIANTS } from './watch.js?v=3';
 
 const $ = (id)=>document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -17,7 +17,7 @@ const ease = (t)=>t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 // ---------- Points de vue : coordonnees spheriques autour d'une cible ----------
 // theta : azimut (0 = face au cadran, PI/2 = cote couronne, PI = fond) ; shift : decalage du cadrage
 const VIEWS = [
-  { name:'Ensemble', target:[0, -0.35, 0], r:15.5, theta:0.34, phi:1.34, shift:0.2 },
+  { name:'Ensemble', target:[0, -0.3, 0], r:15.8, theta:0.2, phi:1.4, shift:0.2 },
   { name:'Lunette', target:[0.5, 0.45, 0.3], r:9.2, theta:0.55, phi:1.08, shift:0.2 },
   { name:'Cadran', target:[0.05, 0.05, 0.16], r:10.2, theta:0.06, phi:1.5, shift:-0.22 },
   { name:'Calibre', target:[0, 0, -0.3], r:10.8, theta:Math.PI - 0.16, phi:1.45, shift:0.2 },
@@ -42,7 +42,8 @@ function lerpView(a, b, t){
 // ---------- Rendu ----------
 const canvas = $('gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, powerPreference:'high-performance' });
-let pixelRatio = Math.min(1.75, devicePixelRatio || 1);
+// rendu suréchantillonné : 2x minimum, quel que soit l'ecran (aretes nettes, gravures lisibles)
+let pixelRatio = Math.min(2.5, Math.max(2, devicePixelRatio || 1));
 renderer.setPixelRatio(pixelRatio);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
@@ -117,7 +118,7 @@ scene.add(W.root);
 const rt = new THREE.WebGLRenderTarget(4, 4, { type:THREE.HalfFloatType, samples:4 });
 const composer = new EffectComposer(renderer, rt);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(4, 4), 0.16, 0.4, 1.4);
+const bloom = new UnrealBloomPass(new THREE.Vector2(4, 4), 0.08, 0.35, 3.0);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -138,7 +139,8 @@ function resize(){
   camera.fov = w / h < 0.8 ? 40 : 30;
   camera.updateProjectionMatrix();
 }
-addEventListener('resize', resize);
+let resized = false;
+addEventListener('resize', ()=>{ resize(); resized = true; });
 let shiftNow = 0;
 function applyShift(target){
   shiftNow = target;
@@ -182,6 +184,7 @@ function setVariant(k){
   document.documentElement.style.setProperty('--glow', VARIANTS[k].glow);
   setBackdrop();
   W.kickRotor(4);
+  forceRender = true;
 }
 
 // ---------- Atelier ----------
@@ -277,26 +280,18 @@ railItems.forEach(li=>li.addEventListener('click', ()=>{
   scrollTo({ top:stage.offsetTop + span * (k / (STORY.length - 1)), behavior:reduced ? 'auto' : 'smooth' });
 }));
 
-// ---------- Qualite adaptative : on degrade proprement si la machine peine ----------
-let perfT = 0, perfN = 0, perfLevel = 0;
-function adapt(dt){
-  perfT += dt; perfN++;
-  if(perfT < 2.5) return;
-  const avg = perfT / perfN; perfT = 0; perfN = 0;
-  if(avg > 0.03 && perfLevel === 0 && pixelRatio > 1){ perfLevel = 1; pixelRatio = 1; resize(); }
-  else if(avg > 0.034 && perfLevel <= 1){ perfLevel = 2; bloom.enabled = false; key.shadow.mapSize.set(1024, 1024); key.shadow.map?.dispose(); key.shadow.map = null; }
-}
-
 // ---------- Boucle ----------
 const clock = new THREE.Clock();
 let visible = true;
 new IntersectionObserver(([e])=>{ visible = e.isIntersecting; }).observe(stage);
 const camOut = { pos:new THREE.Vector3(), target:new THREE.Vector3() };
+let lastSig = '', lastTick = -1, forceRender = true;
 
 function frame(){
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, clock.getDelta()), t = clock.elapsedTime;
   if((!visible && !atelier) || document.hidden) return;
+  if(resized){ resized = false; forceRender = true; }
 
   scrollSeg = stageProgress() * (STORY.length - 1);
   if(!atelier){
@@ -332,14 +327,22 @@ function frame(){
   night += (nightTarget - night) * Math.min(1, dt * 2.5);
   scene.environmentIntensity = 0.9 * (1 - night * 0.94);
   key.intensity = 1.6 * (1 - night * 0.97); rim.intensity = 1.4 * (1 - night * 0.9); moon.intensity = night * 0.5;
-  bloom.strength = 0.16 + night * 0.9; bloom.threshold = 1.4 - night * 1.2;
+  bloom.strength = 0.08 + night * 0.95; bloom.threshold = 3.0 - night * 2.8;
   W.setNight(night);
 
   if(scrollSeg > 2.6 && scrollSeg < 3.4 && !atelier) W.kickRotor(dt * 1.5);
+  // Rendu a la demande : la scene est lourde (sureéchantillonnage, ombres douces, verre).
+  // On redessine si la camera bouge, pendant une transition, quand on voit le calibre
+  // (balancier anime) ou a chaque pas de la trotteuse (8 par seconde) ; sinon on garde l'image.
+  const sig = camera.position.x.toFixed(4) + camera.position.y.toFixed(4) + camera.position.z.toFixed(4) + W.root.rotation.y.toFixed(4) + W.root.rotation.x.toFixed(4) + shiftNow.toFixed(4);
+  const tick = Math.floor(t * 8);
+  const showsBack = camera.position.z - cam.target.z < -1;
+  const need = sig !== lastSig || tick !== lastTick || Math.abs(nightTarget - night) > 0.002 || showsBack || forceRender;
+  if(!need) return;
+  lastSig = sig; lastTick = tick; forceRender = false;
   W.update(dt, t);
   composer.render(dt);
   placeHotspots();
-  adapt(dt);
 }
 
 // ---------- Vignettes de la collection (rendues avec la vraie montre) ----------

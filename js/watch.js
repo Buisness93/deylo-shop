@@ -234,7 +234,7 @@ export function createWatch(){
   M.flange = new THREE.MeshStandardMaterial({ roughness:0.45, metalness:0.3, side:THREE.DoubleSide });
   M.lume = new THREE.MeshStandardMaterial({ color:0xeef3ea, roughness:0.55, emissive:0x6fffd2, emissiveIntensity:0 });
   M.date = new THREE.MeshStandardMaterial({ roughness:0.5 });
-  M.crystal = new THREE.MeshPhysicalMaterial({ transmission:1, roughness:0, ior:1.77, thickness:0.05, metalness:0, clearcoat:1, specularIntensity:1, envMapIntensity:1.6 });
+  M.crystal = new THREE.MeshPhysicalMaterial({ transmission:1, roughness:0, ior:1.77, thickness:0.05, metalness:0, clearcoat:1, specularIntensity:0.75, specularColor:new THREE.Color(0xb9d0ff), envMapIntensity:1.4 });
   M.inner = new THREE.MeshStandardMaterial({ color:0x08080a, roughness:0.85, side:THREE.BackSide });
   M.plate = new THREE.MeshStandardMaterial({ map:perlageTexture(), metalness:0.85, roughness:0.36 });
   M.bridge = new THREE.MeshStandardMaterial({ map:cotesTexture('#c9ccd1', [['CALIBRE 4302', 600, '500 44px "Jost", Arial, sans-serif'], ['32 JEWELS · SWISS MADE', 660, '400 28px "Jost", Arial, sans-serif']]), metalness:0.9, roughness:0.28 });
@@ -389,6 +389,9 @@ export function createWatch(){
 
   // --- Bracelet integre : rangs de maillons lateraux satines + maillon central poli decale
   const bracelet = new THREE.Group(); watch.add(bracelet);
+  { const s = new THREE.Shape(); s.moveTo(-1.2, -0.13); s.lineTo(1.2, -0.13); s.lineTo(1.15, 0.13); s.lineTo(-1.15, 0.13); s.closePath();
+    const g = extrude(s, 0.26, 0.035, 4, 4); g.translate(0, 0, -0.13);
+    [1, -1].forEach(dir=>{ const m = add(g, [M.satinV, M.polish], bracelet); m.position.set(0, dir * 2.2, -0.1); if(dir < 0) m.rotation.z = Math.PI; }); }
   { const R = 3.2, a0 = Math.asin(2.38 / 3.2), da = 0.1375, rows = 10, zc = -0.11 - R * Math.cos(a0);
     const frame = (a, dir)=>{
       const P = new THREE.Vector3(0, dir * R * Math.sin(a), zc + R * Math.cos(a));
