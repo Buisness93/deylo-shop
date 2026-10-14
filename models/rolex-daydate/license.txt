@@ -1,0 +1,11 @@
+Model Information:
+* title:	Rolex Datejust
+* source:	https://sketchfab.com/3d-models/rolex-datejust-9ad3e4c91e91405d9fc526c8ef496d0e
+* author:	Yevhen Artamonov (https://sketchfab.com/YevhenArtamonov)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Rolex Datejust" (https://sketchfab.com/3d-models/rolex-datejust-9ad3e4c91e91405d9fc526c8ef496d0e) by Yevhen Artamonov (https://sketchfab.com/YevhenArtamonov) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

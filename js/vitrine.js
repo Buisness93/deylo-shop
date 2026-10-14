@@ -54,6 +54,8 @@ controls.minDistance = 2.5; controls.maxDistance = 30;
 controls.autoRotate = !reduced; controls.autoRotateSpeed = 0.6;
 
 const holder = new THREE.Group(); scene.add(holder);
+// outil de reglage : ?debug dans l'URL permet de tester une orientation depuis la console
+if(/[?&]debug/.test(location.search)) window.__vt = { controls, rot:(x, y, z)=>{ const r = holder.children[0]?.children[0]; if(r){ r.rotation.set(...[x, y, z].map(THREE.MathUtils.degToRad)); dirty = true; } } };
 
 function resize(){
   const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -116,7 +118,7 @@ async function show(w){
   $('vtBrand').textContent = w.brand;
   $('vtModel').textContent = w.model;
   $('vtSub').textContent = w.sub;
-  $('vtCredit').innerHTML = 'Modèle 3D « ' + esc(w.title) + ' » par ' + esc(w.author) + ' (<a href="' + esc(w.source) + '" target="_blank" rel="noopener">Sketchfab</a>), licence <a href="' + esc(w.licenseUrl) + '" target="_blank" rel="noopener">' + esc(w.license) + '</a>.';
+  $('vtCredit').innerHTML = 'Modèle 3D « ' + esc(w.title) + ' » par ' + (w.authorUrl ? '<a href="' + esc(w.authorUrl) + '" target="_blank" rel="noopener">' + esc(w.author) + '</a>' : esc(w.author)) + ' (<a href="' + esc(w.source) + '" target="_blank" rel="noopener">Sketchfab</a>), licence <a href="' + esc(w.licenseUrl) + '" target="_blank" rel="noopener">' + esc(w.license) + '</a>.';
   holder.clear(); dirty = true;
   if(!w.available){
     state('<b>Modèle à déposer</b><p>Téléchargez le glTF depuis <a href="' + esc(w.source) + '" target="_blank" rel="noopener">sa page Sketchfab</a> et placez-le ici :</p><code>' + esc(w.path) + '</code>');
@@ -128,6 +130,8 @@ async function show(w){
       state('<b>Chargement…</b><p>' + esc(w.brand + ' ' + w.model) + '</p>', 0);
       const gltf = await loader.loadAsync(w.path, (e)=>{ if(token === loadToken && e.total) state('<b>Chargement…</b><p>' + esc(w.brand + ' ' + w.model) + '</p>', e.loaded / e.total); });
       root = new THREE.Group(); root.add(gltf.scene);
+      // chaque modele a son orientation d'origine : on tourne le cadran vers la vue « Face »
+      if(w.rotation) gltf.scene.rotation.set(...w.rotation.map(THREE.MathUtils.degToRad));
       const size = normalize(gltf.scene);
       root.userData.size = size;
       cache[w.id] = root;
@@ -135,7 +139,7 @@ async function show(w){
     if(token !== loadToken) return;
     holder.add(root);
     const s = root.userData.size;
-    fitDist = Math.max(s.x, s.y) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.35 + s.z;
+    fitDist = Math.max(s.x / camera.aspect, s.y) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.1 + s.z * 0.5;
     controls.maxDistance = fitDist * 2.5; controls.minDistance = fitDist * 0.25;
     goView('front', true);
     document.querySelectorAll('#vtViews button').forEach(b=>b.classList.toggle('on', b.dataset.view === 'front'));

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Richard Mille RM011 Low Poly
+* source:	https://sketchfab.com/3d-models/richard-mille-rm011-low-poly-5d9f94e4f5034d8cba3ac4b05dbc06ad
+* author:	Denis V (https://sketchfab.com/xb33)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Richard Mille RM011 Low Poly" (https://sketchfab.com/3d-models/richard-mille-rm011-low-poly-5d9f94e4f5034d8cba3ac4b05dbc06ad) by Denis V (https://sketchfab.com/xb33) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
