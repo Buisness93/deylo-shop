@@ -259,6 +259,7 @@ function setVariant(k){
 
 // ---------- Atelier ----------
 function enterAtelier(view){
+  intro = 1;
   atelier = true;
   document.body.classList.add('in-atelier');
   $('atelier').hidden = false;
@@ -332,6 +333,11 @@ function placeHotspots(){
   });
 }
 
+// ---------- Titres : chaque ligne glisse hors d'un masque ----------
+document.querySelectorAll('.chapter h1,.chapter h2,.sec-head h2').forEach(h=>{
+  h.innerHTML = h.innerHTML.split(/<br\s*\/?>/i).map(part=>'<span class="ln"><span>' + part.trim() + '</span></span>').join('');
+});
+
 // ---------- Chapitres ----------
 const chapters = [...document.querySelectorAll('.chapter')];
 const railItems = [...document.querySelectorAll('#rail li')];
@@ -342,6 +348,7 @@ function updateChapters(){
     c.style.opacity = o.toFixed(3);
     c.style.transform = 'translateY(' + ((segSmooth - k) * -40).toFixed(1) + 'px)';
     c.style.pointerEvents = o > 0.6 ? 'auto' : 'none';
+    c.classList.toggle('on', o > 0.5);
   });
   railItems.forEach((li, k)=>li.classList.toggle('on', Math.round(segSmooth) === k));
   $('scrollCue').style.opacity = String(1 - smooth(0.05, 0.3, segSmooth));
@@ -357,6 +364,7 @@ let visible = true;
 new IntersectionObserver(([e])=>{ visible = e.isIntersecting; }).observe(stage);
 const camOut = { pos:new THREE.Vector3(), target:new THREE.Vector3() };
 let lastSig = '', lastTick = -1, forceRender = true, stillSince = 0;
+let intro = reduced ? 1 : 0, introOn = false;
 
 function frame(){
   requestAnimationFrame(frame);
@@ -380,6 +388,14 @@ function frame(){
     if(Math.abs(pointer.y - pointer.sy) < 0.002) pointer.sy = pointer.y;
     W.root.rotation.y = heroW * (reduced ? 0 : 0.08 + pointer.sx * 0.18);
     W.root.rotation.x = heroW * pointer.sy * 0.12;
+    // entree : quart de tour, legere plongee, la montre se pose ; la lumiere cle balaie la lunette
+    if(introOn && intro < 1) intro = Math.min(1, intro + dt / 2.8);
+    const iv = 1 - ease(intro);
+    W.root.rotation.y += -1.15 * iv;
+    W.root.rotation.x += 0.35 * iv;
+    W.root.position.y = -0.9 * iv;
+    W.root.scale.setScalar(1 - 0.14 * iv);
+    key.position.x = -3.5 + 14 * iv;
     updateChapters();
   } else {
     W.root.rotation.y *= 0.92; W.root.rotation.x *= 0.92;
@@ -409,7 +425,7 @@ function frame(){
   // Rendu a la demande : la scene est lourde (sureéchantillonnage, ombres douces, verre).
   // On redessine si la camera bouge, pendant une transition, quand on voit le calibre
   // (balancier anime) ou a chaque pas de la trotteuse (8 par seconde) ; sinon on garde l'image.
-  const sig = camera.position.x.toFixed(4) + camera.position.y.toFixed(4) + camera.position.z.toFixed(4) + W.root.rotation.y.toFixed(4) + W.root.rotation.x.toFixed(4) + shiftNow.toFixed(4);
+  const sig = camera.position.x.toFixed(4) + camera.position.y.toFixed(4) + camera.position.z.toFixed(4) + W.root.rotation.y.toFixed(4) + W.root.rotation.x.toFixed(4) + shiftNow.toFixed(4) + intro.toFixed(4);
   const tick = Math.floor(t * 8);
   const showsBack = camera.position.z - cam.target.z < -1;
   const moving = sig !== lastSig || Math.abs(nightTarget - night) > 0.002;
@@ -515,7 +531,7 @@ document.querySelectorAll('[data-count]').forEach(el=>{
 });
 
 const io = new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold:0.15 });
-document.querySelectorAll('.sec-head,.coll-grid,.figures,.specs,.craft-card,.rdv-form,.timeline').forEach(el=>io.observe(el));
+document.querySelectorAll('.sec-head,.coll-grid,.figures,.specs,.craft-card,.rdv-form,.timeline,.foot').forEach(el=>io.observe(el));
 addEventListener('scroll', ()=>$('nav').classList.toggle('solid', scrollY > innerHeight * 0.5), { passive:true });
 
 $('rdvForm').addEventListener('submit', (e)=>{
@@ -549,5 +565,9 @@ $('rdvForm').addEventListener('submit', (e)=>{
   segSmooth = stageProgress() * (STORY.length - 1);
   bar.style.width = '100%';
   frame();
-  setTimeout(()=>$('loader').classList.add('done'), reduced ? 0 : 600);
+  setTimeout(()=>{
+    $('loader').classList.add('done');
+    introOn = true;
+    document.body.classList.add('ready');
+  }, reduced ? 0 : 600);
 })();

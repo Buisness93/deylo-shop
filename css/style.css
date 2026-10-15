@@ -311,3 +311,96 @@ body.night .stage-glow{background:radial-gradient(125% 95% at 50% 42%,transparen
 .foot .foot-small{font-size:12px;letter-spacing:.06em;color:var(--ink-4)}
 .foot .foot-small a{color:var(--ink-3);border-bottom:1px solid var(--line-2)}
 .foot .foot-small a:hover{color:var(--gold-2)}
+
+/* ---------- Animations ---------- */
+/* titres : chaque ligne sort d'un masque, en decale */
+.ln{display:block;overflow:hidden;padding:0 .04em .12em;margin:0 -.04em -.12em}
+.ln > span{display:inline-block;transform:translateY(110%) rotate(2deg);transform-origin:left top;transition:transform 1.5s var(--ease)}
+.ln + .ln > span{transition-delay:.12s}
+.ready .chapter.on .ln > span,.sec-head.in .ln > span{transform:none}
+
+/* chapitres : surtitre, texte, chiffres et boutons arrivent en cascade */
+.chapter .eyebrow,.chapter > p:not(.eyebrow),.chapter .mini-specs,.chapter .hero-actions,.chapter .live-time,.chapter .finish-pick{opacity:0;transform:translateY(22px);filter:blur(6px);transition:opacity 1.1s var(--ease),transform 1.3s var(--ease),filter 1.1s var(--ease)}
+.ready .chapter.on .eyebrow{opacity:1;transform:none;filter:none;transition-delay:0s}
+.ready .chapter.on > p:not(.eyebrow){opacity:1;transform:none;filter:none;transition-delay:.3s}
+.ready .chapter.on .mini-specs,.ready .chapter.on .finish-pick{opacity:1;transform:none;filter:none;transition-delay:.42s}
+.ready .chapter.on .hero-actions{opacity:1;transform:none;filter:none;transition-delay:.5s}
+.ready .chapter.on .live-time{opacity:1;transform:none;filter:none;transition-delay:.65s}
+.ready .ch-hero.on .eyebrow{transition-delay:.5s}
+.ready .ch-hero.on .ln > span{transition-delay:.65s}
+.ready .ch-hero.on .ln + .ln > span{transition-delay:.8s}
+.ready .ch-hero.on > p:not(.eyebrow){transition-delay:1.1s}
+.ready .ch-hero.on .hero-actions{transition-delay:1.3s}
+.ready .ch-hero.on .live-time{transition-delay:1.5s}
+/* filet du surtitre qui se trace */
+.eyebrow::before{transform:scaleX(0);transform-origin:left;transition:transform 1.2s var(--ease) .2s}
+.ready .chapter.on .eyebrow::before,.sec-head.in .eyebrow::before{transform:scaleX(1)}
+.mini-specs{border-top-color:transparent;position:relative}
+.mini-specs::before{content:'';position:absolute;left:0;right:0;top:-1px;height:1px;background:var(--line-2);transform:scaleX(0);transform-origin:left;transition:transform 1.4s var(--ease) .5s}
+.ready .chapter.on .mini-specs::before{transform:scaleX(1)}
+
+/* barre de navigation et reperes : arrivee apres le chargement */
+.nav,.rail,.scroll-cue{opacity:0;transition:opacity 1.4s var(--ease) 1.4s,background .5s,padding .5s,border-color .5s}
+.ready .nav,.ready .rail,.ready .scroll-cue{opacity:1}
+.nav{transform:translateY(-12px);transition:opacity 1.4s var(--ease) 1.4s,transform 1.4s var(--ease) 1.4s,background .5s,padding .5s,border-color .5s}
+.ready .nav{transform:none}
+
+/* sections : le bloc ne glisse plus, ce sont les lignes et les rendus qui se devoilent */
+.sec-head{transform:none}
+.sec-head .sec-lede{opacity:0;transform:translateY(16px);transition:opacity 1.2s var(--ease) .35s,transform 1.2s var(--ease) .35s}
+.sec-head.in .sec-lede{opacity:1;transform:none}
+
+/* piece presentee : l'image se leve comme un rideau, la fiche suit */
+.coll-grid.feature .feat-img{clip-path:inset(100% 0 0 0);transition:clip-path 1.8s var(--ease) .15s}
+.coll-grid.feature .feat-img img{transform:scale(1.18);transition:transform 2.6s var(--ease) .15s}
+.coll-grid.feature.in .feat-img{clip-path:inset(0 0 0 0)}
+.coll-grid.feature.in .feat-img img{transform:none}
+.coll-grid.feature.in .feat:hover .feat-img img{transform:scale(1.035)}
+.feat-body > *{opacity:0;transform:translateY(18px);transition:opacity 1.1s var(--ease),transform 1.2s var(--ease)}
+.coll-grid.in .feat-body > *{opacity:1;transform:none}
+.coll-grid.in .feat-body > :nth-child(2){transition-delay:.55s}
+.coll-grid.in .feat-body > :nth-child(1){transition-delay:.45s}
+.coll-grid.in .feat-body > :nth-child(3){transition-delay:.65s}
+.coll-grid.in .feat-body > :nth-child(4){transition-delay:.78s}
+.coll-grid.in .feat-body > :nth-child(5){transition-delay:.92s}
+
+/* finitions : chaque gros plan se devoile, de haut en bas, en decale */
+.craft-card .swatch{clip-path:inset(0 0 100% 0);transition:clip-path 1.5s var(--ease),filter .8s}
+.craft-card.in .swatch{clip-path:inset(0 0 0 0)}
+.craft-card:nth-child(2) .swatch{transition-delay:.12s,0s}.craft-card:nth-child(3) .swatch{transition-delay:.24s,0s}.craft-card:nth-child(4) .swatch{transition-delay:.36s,0s}
+
+/* frise : le fil se trace, puis chaque date apparait */
+.timeline{border-top:0;position:relative}
+.timeline::after{content:'';position:absolute;left:0;right:0;top:0;height:1px;background:var(--line-2);transform:scaleX(0);transform-origin:left;transition:transform 2s var(--ease) .2s}
+.timeline.in::after{transform:scaleX(1)}
+.timeline li{opacity:0;transform:translateY(24px);transition:opacity 1.1s var(--ease),transform 1.2s var(--ease)}
+.timeline li::before{transform:rotate(45deg) scale(0);transition:transform .8s var(--ease)}
+.timeline.in li{opacity:1;transform:none}
+.timeline.in li::before{transform:rotate(45deg) scale(1)}
+.timeline.in li:nth-child(1),.timeline.in li:nth-child(1)::before{transition-delay:.45s}
+.timeline.in li:nth-child(2),.timeline.in li:nth-child(2)::before{transition-delay:.75s}
+.timeline.in li:nth-child(3),.timeline.in li:nth-child(3)::before{transition-delay:1.05s}
+.timeline.in li:nth-child(4),.timeline.in li:nth-child(4)::before{transition-delay:1.35s}
+
+/* fiche technique : les lignes se posent une a une */
+.specs{transform:none}
+.specs tr{opacity:0;transform:translateX(-16px);transition:opacity .9s var(--ease),transform 1.1s var(--ease)}
+.specs.in tr{opacity:1;transform:none}
+.specs.in tr:nth-child(2){transition-delay:.08s}.specs.in tr:nth-child(3){transition-delay:.16s}.specs.in tr:nth-child(4){transition-delay:.24s}.specs.in tr:nth-child(5){transition-delay:.32s}.specs.in tr:nth-child(6){transition-delay:.4s}.specs.in tr:nth-child(7){transition-delay:.48s}
+.figures .fig{opacity:0;transform:translateY(20px);transition:opacity 1s var(--ease),transform 1.2s var(--ease)}
+.figures.in .fig{opacity:1;transform:none}
+.figures.in .fig:nth-child(2){transition-delay:.12s}.figures.in .fig:nth-child(3){transition-delay:.24s}.figures.in .fig:nth-child(4){transition-delay:.36s}
+
+/* pied de page */
+.foot{opacity:0;transition:opacity 1.6s var(--ease)}
+.foot.in{opacity:1}
+
+/* boutons : reflet qui traverse au survol */
+.btn{position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .9s var(--ease);pointer-events:none}
+.btn:hover::after{left:130%}
+.btn-line::after{background:linear-gradient(100deg,transparent,rgba(230,207,168,.18),transparent)}
+
+@media (prefers-reduced-motion:reduce){
+  .ln > span,.chapter *,.feat-img,.feat-img img,.feat-body > *,.swatch,.timeline li,.specs tr,.fig,.nav,.foot{transform:none!important;opacity:1!important;filter:none!important;clip-path:none!important}
+}
