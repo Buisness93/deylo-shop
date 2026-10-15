@@ -45,7 +45,8 @@ function lerpView(a, b, t){
 const canvas = $('gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, powerPreference:'high-performance' });
 // rendu suréchantillonné : 2x minimum, quel que soit l'ecran (aretes nettes, gravures lisibles)
-const PR_MOVE = Math.min(1.25, devicePixelRatio || 1), PR_STILL = Math.min(2, Math.max(1.5, devicePixelRatio || 1));
+let PR_MOVE = Math.min(1.25, devicePixelRatio || 1);
+const PR_STILL = Math.min(2, Math.max(1.5, devicePixelRatio || 1));
 let pixelRatio = PR_STILL;
 renderer.setPixelRatio(pixelRatio);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -159,7 +160,12 @@ async function loadReal(){
   m.traverse(o=>{
     if(!o.isMesh) return;
     o.castShadow = o.receiveShadow = true;
-    (Array.isArray(o.material) ? o.material : [o.material]).forEach(mt=>{ if(mt.map) mt.map.anisotropy = 8; mt.clippingPlanes = [braceletCut]; mt.clipShadows = true; });
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(mt=>{
+      if(mt.map) mt.map.anisotropy = 8;
+      mt.clippingPlanes = [braceletCut]; mt.clipShadows = true;
+      // la transmission redessine toute la scene une seconde fois a chaque image : verre simple
+      if(mt.transmission > 0){ mt.transmission = 0; mt.transparent = true; mt.opacity = 0.14; mt.roughness = 0; mt.depthWrite = false; }
+    });
   });
   const g = new THREE.Group(); g.add(m);
   const dialBox = orientByDial(m), dc = dialBox.getCenter(new THREE.Vector3()), dr = dialBox.getSize(new THREE.Vector3()).x / 2;
@@ -194,6 +200,9 @@ controls.enableDamping = true; controls.dampingFactor = 0.08;
 controls.minDistance = 3.2; controls.maxDistance = 22;
 controls.rotateSpeed = 0.7;
 
+function setSamples(n){
+  [composer.renderTarget1, composer.renderTarget2].forEach(t=>{ if(t.samples !== n){ t.samples = n; t.dispose(); } });
+}
 function resize(){
   const w = canvas.clientWidth, h = canvas.clientHeight;
   if(!w || !h) return;
@@ -201,6 +210,7 @@ function resize(){
   renderer.setSize(w, h, false);
   composer.setPixelRatio(pixelRatio);
   composer.setSize(w, h);
+  setSamples(pixelRatio <= PR_MOVE ? 2 : 4);
   camera.aspect = w / h;
   camera.fov = w / h < 0.8 ? 40 : 30;
   camera.updateProjectionMatrix();
@@ -365,6 +375,7 @@ new IntersectionObserver(([e])=>{ visible = e.isIntersecting; }).observe(stage);
 const camOut = { pos:new THREE.Vector3(), target:new THREE.Vector3() };
 let lastSig = '', lastTick = -1, forceRender = true, stillSince = 0;
 let intro = reduced ? 1 : 0, introOn = false;
+let frameEma = 0.016, lastAdapt = 0;
 
 function frame(){
   requestAnimationFrame(frame);
@@ -432,11 +443,16 @@ function frame(){
   if(moving) stillSince = t;
   // en mouvement : definition normale (fluide) ; des que l'image se pose : haute definition
   // (vue du calibre : le balancier tourne en continu, on reste en definition intermediaire)
+  // qualite adaptative : si la machine peine en mouvement, on baisse un peu la definition de mouvement
+  if(moving && pixelRatio === PR_MOVE){
+    frameEma += (dt - frameEma) * 0.08;
+    if(frameEma > 0.021 && PR_MOVE > 0.7 && t - lastAdapt > 1){ PR_MOVE = Math.max(0.7, PR_MOVE * 0.85); lastAdapt = t; frameEma = 0.016; }
+  }
   const wantPR = (t - stillSince) > 0.25 ? (showsBack ? Math.min(PR_STILL, 1.5) : PR_STILL) : PR_MOVE;
   if(wantPR !== pixelRatio){ pixelRatio = wantPR; resize(); forceRender = true; }
-  const need = moving || tick !== lastTick || showsBack || forceRender;
+  const need = moving || forceRender || (!real && (tick !== lastTick || showsBack));
   if(!need) return;
-  if(!moving || forceRender || tick % 4 === 0) renderer.shadowMap.needsUpdate = true;
+  if(!moving || forceRender) renderer.shadowMap.needsUpdate = true;
   lastSig = sig; lastTick = tick; forceRender = false;
   W.update(dt, t);
   composer.render(dt);
