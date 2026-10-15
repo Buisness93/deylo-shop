@@ -118,36 +118,62 @@ const cam = { pos:new THREE.Vector3(), target:new THREE.Vector3() };
 const W = createWatch();
 scene.add(W.root);
 
-// ---------- Vrai modele 3D (Sketchfab, CC BY-NC-SA) a la place de la reconstitution codee ----------
+// ---------- Vrai modele 3D (Sketchfab, CC BY : usage commercial permis) a la place de la reconstitution codee ----------
 // La montre codee reste affichee pendant le chargement, et en secours si le fichier manque.
-const REAL = { path:'models/ap-royaloak-tourbillon/scene.glb', rotation:[90, 0, 0] };
-// le bracelet ferme passe derriere la boite et cacherait le fond : on coupe ce qui depasse
-// en arriere de la boite (plan exprime dans le repere de la montre, recale a chaque image)
+const REAL = { path:'models/rolex-daydate/scene.glb', dial:'tablo_rolex', top:'monday.003', glass:'glass' };
+// Le bracelet ferme passe derriere la boite et cacherait le fond : on coupe ce qui depasse en
+// arriere de la boite (plan exprime dans le repere de la montre, recale a chaque image).
 const CUT = new THREE.Plane(new THREE.Vector3(0, 0, 1), 1.0), braceletCut = CUT.clone();
 renderer.localClippingEnabled = true;
 let real = false;
+
+// points (echantillonnes) d'un objet en coordonnees monde
+function worldPoints(o, step = 5){
+  const pts = [];
+  o.updateMatrixWorld(true);
+  o.traverse(m=>{ if(!m.isMesh) return; const p = m.geometry.attributes.position; for(let i = 0; i < p.count; i += step) pts.push(new THREE.Vector3().fromBufferAttribute(p, i).applyMatrix4(m.matrixWorld)); });
+  return pts;
+}
+const meshByMaterial = (root, name)=>{ let r = null; root.traverse(o=>{ if(!r && o.isMesh && [].concat(o.material).some(mt=>mt.name === name)) r = o; }); return r; };
+// Oriente le modele d'apres son cadran : cadran face a +z, midi (guichet du jour) vers +y
+function orientByDial(m){
+  const dial = meshByMaterial(m, REAL.dial), top = meshByMaterial(m, REAL.top), glass = meshByMaterial(m, REAL.glass);
+  const dp = worldPoints(dial, 1), c = new THREE.Box3().setFromPoints(dp).getCenter(new THREE.Vector3());
+  // normale du cadran : plan des moindres carres via trois points eloignes
+  const far = (from)=>dp.reduce((a, p)=>p.distanceToSquared(from) > a.distanceToSquared(from) ? p : a, dp[0]);
+  const a = far(c), b = far(a), d = dp.reduce((best, p)=>{ const s = p.clone().sub(a).cross(b.clone().sub(a)).lengthSq(); return s > best[0] ? [s, p] : best; }, [0, dp[0]])[1];
+  const n = b.clone().sub(a).cross(d.clone().sub(a)).normalize();
+  const gc = new THREE.Box3().setFromPoints(worldPoints(glass, 3)).getCenter(new THREE.Vector3());
+  if(gc.sub(c).dot(n) < 0) n.negate();                         // la normale sort cote glace
+  const up = new THREE.Box3().setFromPoints(worldPoints(top, 1)).getCenter(new THREE.Vector3()).sub(c);
+  up.addScaledVector(n, -up.dot(n)).normalize();
+  const basis = new THREE.Matrix4().makeBasis(new THREE.Vector3().crossVectors(up, n), up, n);
+  m.quaternion.premultiply(new THREE.Quaternion().setFromRotationMatrix(basis).invert());
+  m.updateMatrixWorld(true);
+  return new THREE.Box3().setFromPoints(worldPoints(dial, 1));
+}
+
 async function loadReal(){
   const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(REAL.path);
   const m = gltf.scene;
-  m.rotation.set(...REAL.rotation.map(THREE.MathUtils.degToRad));
   m.traverse(o=>{
     if(!o.isMesh) return;
     o.castShadow = o.receiveShadow = true;
     (Array.isArray(o.material) ? o.material : [o.material]).forEach(mt=>{ if(mt.map) mt.map.anisotropy = 8; mt.clippingPlanes = [braceletCut]; mt.clipShadows = true; });
   });
-  // Le modele a un bracelet ferme en boucle derriere la tete : on cale la tete seule (tranche
-  // avant du modele) sur l'encombrement de la reconstitution, pour garder cadrages et chapitres.
+  const g = new THREE.Group(); g.add(m);
+  const dialBox = orientByDial(m), dc = dialBox.getCenter(new THREE.Vector3()), dr = dialBox.getSize(new THREE.Vector3()).x / 2;
+  // tete de montre : tout ce qui est a moins d'un rayon de cadran et demi de l'axe, devant le fond
+  const head = new THREE.Box3();
+  worldPoints(m).forEach(p=>{ if(Math.hypot(p.x - dc.x, p.y - dc.y) < dr * 1.45 && p.z > dc.z - dr * 0.6) head.expandByPoint(p); });
+  // on cale la tete sur l'encombrement de la reconstitution (largeur couronne comprise) :
+  // cadrages et chapitres restent valables
   W.root.updateMatrixWorld(true);
   const ref = new THREE.Box3().setFromObject(W.watch), rc = ref.getCenter(new THREE.Vector3());
-  const g = new THREE.Group(); g.add(m); g.updateMatrixWorld(true);
-  const pts = [], v = new THREE.Vector3();
-  m.traverse(o=>{ if(!o.isMesh) return; const p = o.geometry.attributes.position; for(let i = 0; i < p.count; i += 5) pts.push(v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld).clone()); });
-  let zmin = Infinity, zmax = -Infinity; pts.forEach(p=>{ zmin = Math.min(zmin, p.z); zmax = Math.max(zmax, p.z); });
-  const head = new THREE.Box3(); pts.forEach(p=>{ if(p.z > zmax - (zmax - zmin) * 0.25) head.expandByPoint(p); });
-  const hs = head.getSize(new THREE.Vector3()), hc = head.getCenter(new THREE.Vector3());
-  const k = (ref.max.x - ref.min.x) / hs.x;
+  const k = (ref.max.x - ref.min.x) / (head.max.x - head.min.x);
   g.scale.setScalar(k);
-  g.position.set(rc.x - hc.x * k, -hc.y * k, 0.45 - zmax * k);
+  g.position.set(rc.x - (head.min.x + head.max.x) / 2 * k, -dc.y * k, 0.45 - head.max.z * k);
+  CUT.constant = -((dc.z - dr * 0.6) * k + g.position.z); braceletCut.copy(CUT);
   W.watch.visible = false;
   W.root.add(g);
   real = true;
@@ -216,14 +242,15 @@ const hex = (n)=>'#' + new THREE.Color(n).getHexString();
 function buildFinishUI(){
   $('finishPick').innerHTML = Object.entries(VARIANTS).map(([k, v])=>'<button type="button" role="radio" data-v="' + k + '" aria-label="' + v.name + ' — ' + v.sub + '" style="--m:' + hex(v.metal === 0x0d0d0e ? 0x2a2b2e : v.metal) + ';--d:' + v.dial + '"><i></i><span>' + v.name + '</span></button>').join('');
   $('atFinishes').innerHTML = Object.entries(VARIANTS).map(([k, v])=>'<button type="button" data-v="' + k + '"><i style="--m:' + hex(v.metal === 0x0d0d0e ? 0x2a2b2e : v.metal) + ';--d:' + v.dial + '"></i><span><b>' + v.name + '</b><small>' + v.sub + '</small></span></button>').join('');
-  $('rdvModel').innerHTML = Object.values(VARIANTS).map(v=>'<option>Royal Oak ' + v.name + '</option>').join('');
+  $('rdvModel').innerHTML = real ? ['Or gris · cadran vert', 'Or jaune', 'Or Everose', 'Platine', 'Autre version'].map(n=>'<option>Day-Date ' + n + '</option>').join('')
+    : Object.values(VARIANTS).map(v=>'<option>Royal Oak ' + v.name + '</option>').join('');
   document.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click', ()=>setVariant(b.dataset.v)));
 }
 function setVariant(k){
   variant = k;
   W.setVariant(k);
   document.querySelectorAll('[data-v]').forEach(b=>{ const on = b.dataset.v === k; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
-  $('atTitle').textContent = 'Royal Oak · ' + VARIANTS[k].name;
+  $('atTitle').textContent = real ? 'Rolex Day-Date' : 'Royal Oak · ' + VARIANTS[k].name;
   document.documentElement.style.setProperty('--glow', VARIANTS[k].glow);
   setBackdrop();
   W.kickRotor(4);
@@ -415,12 +442,11 @@ function renderThumbs(){
     composer.render(0);
     const img = canvas.toDataURL('image/jpeg', 0.9);
     return '<article class="coll-card" data-pick="' + k + '" style="--m:' + v.glow + '">' +
-      '<div class="cc-img"><img src="' + img + '" alt="Rendu 3D Royal Oak ' + v.name + ', ' + v.sub + '"></div>' +
-      '<div class="cc-body"><p class="cc-ref">Audemars Piguet · ' + (real ? 'Modèle 3D' : k === 'acier' ? 'Réf. 15510ST' : 'Étude 3D') + '</p><h3>' + (real ? 'Royal Oak Tourbillon' : 'Royal Oak') + '</h3><p class="cc-sub">' + (real ? 'Acier · Grande Tapisserie · tourbillon à 6 h' : v.sub) + '</p>' +
+      '<div class="cc-img"><img src="' + img + '" alt="' + (real ? 'Rendu 3D Rolex Day-Date' : 'Rendu 3D Royal Oak ' + v.name + ', ' + v.sub) + '"></div>' +
+      '<div class="cc-body"><p class="cc-ref">' + (real ? 'Rolex · Modèle 3D' : 'Audemars Piguet · ' + (k === 'acier' ? 'Réf. 15510ST' : 'Étude 3D')) + '</p><h3>' + (real ? 'Day-Date' : 'Royal Oak') + '</h3><p class="cc-sub">' + (real ? 'Or gris · cadran vert · bracelet Président' : v.sub) + '</p>' +
       '<div class="cc-foot"><span>Prix sur demande</span><button class="btn btn-line btn-sm" type="button">Examiner en 3D</button></div></div></article>';
   });
   grid.innerHTML = cards.join('');
-  if(real) document.querySelector('#versions h2').innerHTML = 'Une silhouette,<br><em>en vrai relief.</em>';
   resize();
   grid.querySelectorAll('[data-pick]').forEach(c=>c.addEventListener('click', ()=>{
     setVariant(c.dataset.pick);

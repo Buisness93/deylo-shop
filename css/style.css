@@ -263,3 +263,4 @@ body.night .stage-glow{background:radial-gradient(125% 95% at 50% 42%,transparen
 
 /* vrai modele 3D : une seule version, pas d'annotations (placees sur la reconstitution) */
 .real-model #finishPick, .real-model #atFinishes, .real-model .at-side > .at-label, .real-model .at-toggle:has(#tglNotes){ display:none; }
+.sw-cannelee{background:repeating-linear-gradient(90deg,#8c9096 0 3px,#f4f5f6 5px,#c3c6ca 8px,#7d8187 11px);}
