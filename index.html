@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=17">
+<link rel="stylesheet" href="css/style.css?v=18">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -30,7 +30,7 @@
   <a href="#top" class="brand" aria-label="Deylo Shop, retour en haut">DEYLO<span>SHOP</span></a>
   <nav class="nav-links" aria-label="Navigation principale">
     <a href="vitrine.html">Vitrine 3D</a>
-    <a href="#versions">Versions</a>
+    <a href="#versions">La pièce</a>
     <a href="#histoire">Histoire</a>
     <a href="#calibre">Calibre 3255</a>
     <a href="#savoir-faire">Finitions</a>
@@ -119,9 +119,9 @@
 
   <section class="section collection" id="versions">
     <header class="sec-head">
-      <p class="eyebrow">Les versions</p>
-      <h2>Une silhouette,<br><em>en vrai relief.</em></h2>
-      <p class="sec-lede">Rendu 3D réalisé à partir du modèle affiché sur cette page. Pour la disponibilité d'une pièce, son état et son prix, contactez-nous : chaque montre est présentée avec son historique.</p>
+      <p class="eyebrow">La pièce</p>
+      <h2>La pièce<br><em>présentée.</em></h2>
+      <p class="sec-lede">Pour la disponibilité d'une pièce, son état et son prix, contactez-nous : chaque montre est présentée avec son historique.</p>
     </header>
     <div class="coll-grid" id="collGrid"></div>
   </section>
@@ -172,10 +172,10 @@
       <p class="sec-lede">Les détails qu'un connaisseur regarde en premier, et que vous pouvez inspecter dans l'examen 3D.</p>
     </header>
     <div class="craft-grid">
-      <article class="craft-card"><div class="swatch sw-cannelee" aria-hidden="true"></div><h3>Lunette cannelée</h3><p>Des cannelures régulières taillées dans l'or. Chaque arête doit être nette et identique à sa voisine, sans arrondi ni trace d'usure.</p></article>
-      <article class="craft-card"><div class="swatch sw-satin" aria-hidden="true"></div><h3>Satiné et poli</h3><p>Sur le Président, les maillons centraux sont polis miroir et les maillons latéraux satinés. Le contraste doit rester franc d'un maillon à l'autre.</p></article>
-      <article class="craft-card"><div class="swatch sw-soleil" aria-hidden="true"></div><h3>Cadran et loupe</h3><p>Chiffres et couronne appliqués, et une date qui remplit la loupe Cyclope. Une date trop petite sous la loupe est un signe classique de contrefaçon.</p></article>
-      <article class="craft-card"><div class="swatch sw-cotes" aria-hidden="true"></div><h3>Côtes de Genève</h3><p>Le calibre 3255 est décoré de vagues régulières sur ses ponts. On ne les voit pas, fond plein oblige, mais l'horloger qui ouvre la montre les vérifie.</p></article>
+      <article class="craft-card"><div class="swatch sw-cannelee" data-shot="bezel" aria-hidden="true"></div><h3>Lunette cannelée</h3><p>Des cannelures régulières taillées dans l'or. Chaque arête doit être nette et identique à sa voisine, sans arrondi ni trace d'usure.</p></article>
+      <article class="craft-card"><div class="swatch sw-satin" data-shot="bracelet" aria-hidden="true"></div><h3>Satiné et poli</h3><p>Sur le Président, les maillons centraux sont polis miroir et les maillons latéraux satinés. Le contraste doit rester franc d'un maillon à l'autre.</p></article>
+      <article class="craft-card"><div class="swatch sw-soleil" data-shot="dial" aria-hidden="true"></div><h3>Cadran et loupe</h3><p>Chiffres et couronne appliqués, et une date qui remplit la loupe Cyclope. Une date trop petite sous la loupe est un signe classique de contrefaçon.</p></article>
+      <article class="craft-card"><div class="swatch sw-cotes" data-shot="caseback" aria-hidden="true"></div><h3>Fond Oyster</h3><p>Un fond plein, vissé, cannelé sur son pourtour pour l'outil de l'horloger. Derrière, le calibre 3255 et ses ponts décorés de Côtes de Genève.</p></article>
     </div>
   </section>
 
@@ -206,6 +206,6 @@
   <p class="foot-small">Site de démonstration : le formulaire n'envoie aucune donnée. Rendu en temps réel avec three.js.</p>
 </footer>
 
-<script type="module" src="js/main.js?v=17"></script>
+<script type="module" src="js/main.js?v=19"></script>
 </body>
 </html>

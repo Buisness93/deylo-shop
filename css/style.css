@@ -264,3 +264,50 @@ body.night .stage-glow{background:radial-gradient(125% 95% at 50% 42%,transparen
 /* vrai modele 3D : une seule version, pas d'annotations (placees sur la reconstitution) */
 .real-model #finishPick, .real-model #atFinishes, .real-model .at-side > .at-label, .real-model .at-toggle:has(#tglNotes){ display:none; }
 .sw-cannelee{background:repeating-linear-gradient(90deg,#8c9096 0 3px,#f4f5f6 5px,#c3c6ca 8px,#7d8187 11px);}
+
+/* ---------- Finition premium ---------- */
+/* lisibilite : texte courant un peu plus grand et plus clair, interlignage aere */
+:root{ --ink-2:#d6cec0; --ink-3:#9c9488; --ink-4:#6c665d; }
+.chapter > p:not(.eyebrow),.lede{font-size:16.5px;line-height:1.75}
+.sec-lede{font-size:17px;line-height:1.8}
+.timeline p,.craft-card p{font-size:15.5px;line-height:1.75}
+.eyebrow{display:flex;align-items:center;gap:14px}
+.eyebrow::before{content:'';width:28px;height:1px;background:currentColor;opacity:.7}
+.ch-hero .eyebrow::before,.at-top .eyebrow::before{display:none}
+.sec-head h2,.chapter h2,.chapter h1{font-weight:300;letter-spacing:-.015em}
+.btn-gold{background:linear-gradient(135deg,#d9bf94 0%,#c8a97e 45%,#b08e60 100%);border-color:#c8a97e;box-shadow:0 10px 30px -14px rgba(200,169,126,.55)}
+.btn-gold:hover{background:linear-gradient(135deg,#ecd7b1,#d4b688 60%,#c09d6c);transform:translateY(-1px)}
+.btn-line{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+
+/* piece presentee : grande image + fiche, au lieu d'une carte isolee */
+.coll-grid.feature{display:block}
+.feat{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);border:1px solid var(--line);background:linear-gradient(135deg,rgba(255,255,255,.025),transparent 60%)}
+.feat-img{position:relative;overflow:hidden;background:#070605;border-right:1px solid var(--line)}
+.feat-img img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:1;transition:transform 2.2s var(--ease)}
+.feat:hover .feat-img img{transform:scale(1.035)}
+.feat-img::after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 120px rgba(0,0,0,.55)}
+.feat-body{display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,5vw,72px)}
+.feat-body h3{font-size:clamp(46px,5vw,76px);line-height:.95;margin-top:10px}
+.feat-sub{margin:18px 0 0;color:var(--ink-2);font-size:16px;line-height:1.7;max-width:420px}
+.feat-specs{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:36px 0 0;border-top:1px solid var(--line)}
+.feat-specs div{padding:18px 0;border-bottom:1px solid var(--line)}
+.feat-specs div:nth-child(odd){padding-right:18px}
+.feat-specs dt{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+.feat-specs dd{margin:6px 0 0;font-family:var(--serif);font-size:22px;color:var(--ink)}
+.feat-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;margin-top:36px}
+.feat-foot > span{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--gold-2)}
+.feat-actions{display:flex;flex-wrap:wrap;gap:10px}
+@media (max-width:900px){ .feat{grid-template-columns:1fr} .feat-img{border-right:0;border-bottom:1px solid var(--line)} }
+
+/* finitions : vrais gros plans de la montre */
+.swatch.shot{background-size:cover;background-position:center;background-repeat:no-repeat;transition:transform 1.4s var(--ease),filter .8s}
+
+.craft-card .swatch{position:relative}
+.craft-card .swatch.shot::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 60px rgba(0,0,0,.5)}
+.craft-card:hover .swatch.shot{filter:brightness(1.12)}
+
+/* pied de page plus lisible */
+.foot p{font-size:14px;line-height:1.75;color:var(--ink-3)}
+.foot .foot-small{font-size:12px;letter-spacing:.06em;color:var(--ink-4)}
+.foot .foot-small a{color:var(--ink-3);border-bottom:1px solid var(--line-2)}
+.foot .foot-small a:hover{color:var(--gold-2)}

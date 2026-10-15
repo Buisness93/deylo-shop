@@ -427,23 +427,57 @@ function frame(){
   placeHotspots();
 }
 
-// ---------- Vignettes de la collection (rendues avec la vraie montre) ----------
+// ---------- Rendus fixes (collection, finitions), faits avec la vraie montre ----------
+function shot(view, w, h){
+  viewToCam(view, camOut);
+  camera.position.copy(camOut.pos); camera.lookAt(camOut.target);
+  renderer.setSize(w, h, false); composer.setSize(w, h);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  W.update(0, 0);
+  renderer.shadowMap.needsUpdate = true;
+  composer.render(0);
+  return canvas.toDataURL('image/jpeg', 0.9);
+}
+// gros plans des finitions (repere de la montre : cadran vers +z, midi vers +y)
+const DETAILS = {
+  bezel:{ target:[1.3, 1.25, 0.35], r:3.9, theta:0.7, phi:1.05 },
+  bracelet:{ target:[0, 2.9, -0.3], r:7.2, theta:-0.55, phi:0.95 },
+  dial:{ target:[0.55, 0.3, 0.2], r:5.6, theta:0.12, phi:1.5 },
+  caseback:{ target:[0, 0, -0.4], r:8.6, theta:Math.PI - 0.25, phi:1.42 },
+};
 function renderThumbs(){
   const grid = $('collGrid');
   camera.clearViewOffset();
-  viewToCam({ target:[0, -0.5, 0], r:14.8, theta:0.42, phi:1.32 }, camOut);
-  camera.position.copy(camOut.pos); camera.lookAt(camOut.target);
-  renderer.setPixelRatio(1); composer.setPixelRatio(1); renderer.setSize(720, 840, false); composer.setSize(720, 840);
-  camera.aspect = 720 / 840; camera.fov = 30; camera.updateProjectionMatrix();
-  // le vrai modele n'existe qu'en acier : une seule carte
-  const cards = Object.entries(VARIANTS).filter(([k])=>!real || k === 'acier').map(([k, v])=>{
-    variant = k; W.setVariant(k); setBackdrop(); W.update(0, 0);
-    renderer.shadowMap.needsUpdate = true;
-    composer.render(0);
-    const img = canvas.toDataURL('image/jpeg', 0.9);
+  renderer.setPixelRatio(1); composer.setPixelRatio(1);
+  camera.fov = 30;
+  if(real){
+    variant = 'acier'; W.setVariant('acier'); setBackdrop();
+    const img = shot({ target:[0, -0.2, 0], r:13.6, theta:0.38, phi:1.36 }, 1000, 1000);
+    grid.classList.add('feature');
+    grid.innerHTML = '<article class="feat" data-pick="acier">' +
+      '<div class="feat-img"><img src="' + img + '" alt="Rendu 3D de la Rolex Day-Date 40 en or gris, cadran vert"></div>' +
+      '<div class="feat-body"><p class="cc-ref">Rolex · Oyster Perpetual</p><h3>Day-Date 40</h3><p class="feat-sub">Or gris 18 carats · cadran vert · chiffres romains · bracelet Président</p>' +
+      '<dl class="feat-specs"><div><dt>Boîte</dt><dd>Oyster, 40 mm</dd></div><div><dt>Lunette</dt><dd>Cannelée</dd></div><div><dt>Calibre</dt><dd>3255, automatique</dd></div><div><dt>Réserve</dt><dd>Environ 70 heures</dd></div></dl>' +
+      '<div class="feat-foot"><span>Prix sur demande</span><div class="feat-actions"><button class="btn btn-gold" type="button" data-act="3d">Examiner en 3D</button><a class="btn btn-line" href="#rendez-vous">Nous contacter</a></div></div></div></article>';
+    // vignettes des finitions : de vrais gros plans de la montre
+    document.querySelectorAll('[data-shot]').forEach(el=>{
+      const v = DETAILS[el.dataset.shot]; if(!v) return;
+      el.style.backgroundImage = 'url(' + shot(v, 800, 600) + ')';
+      el.classList.add('shot');
+    });
+    resize();
+    grid.querySelector('[data-act="3d"]').addEventListener('click', ()=>{
+      scrollTo({ top:stage.offsetTop, behavior:'auto' });
+      setTimeout(()=>enterAtelier(0), 60);
+    });
+    return;
+  }
+  const cards = Object.entries(VARIANTS).map(([k, v])=>{
+    variant = k; W.setVariant(k); setBackdrop();
+    const img = shot({ target:[0, -0.5, 0], r:14.8, theta:0.42, phi:1.32 }, 720, 840);
     return '<article class="coll-card" data-pick="' + k + '" style="--m:' + v.glow + '">' +
-      '<div class="cc-img"><img src="' + img + '" alt="' + (real ? 'Rendu 3D Rolex Day-Date' : 'Rendu 3D Royal Oak ' + v.name + ', ' + v.sub) + '"></div>' +
-      '<div class="cc-body"><p class="cc-ref">' + (real ? 'Rolex · Modèle 3D' : 'Audemars Piguet · ' + (k === 'acier' ? 'Réf. 15510ST' : 'Étude 3D')) + '</p><h3>' + (real ? 'Day-Date' : 'Royal Oak') + '</h3><p class="cc-sub">' + (real ? 'Or gris · cadran vert · bracelet Président' : v.sub) + '</p>' +
+      '<div class="cc-img"><img src="' + img + '" alt="Rendu 3D Royal Oak ' + v.name + ', ' + v.sub + '"></div>' +
+      '<div class="cc-body"><p class="cc-ref">Audemars Piguet · ' + (k === 'acier' ? 'Réf. 15510ST' : 'Étude 3D') + '</p><h3>Royal Oak</h3><p class="cc-sub">' + v.sub + '</p>' +
       '<div class="cc-foot"><span>Prix sur demande</span><button class="btn btn-line btn-sm" type="button">Examiner en 3D</button></div></div></article>';
   });
   grid.innerHTML = cards.join('');
