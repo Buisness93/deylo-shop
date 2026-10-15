@@ -6,6 +6,7 @@
 // calibre detaille (platine perlee, ponts Cotes de Geneve, rouages, echappement,
 // balancier a 4 Hz, masse oscillante en or).
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const TAU = Math.PI * 2;
 
@@ -285,7 +286,8 @@ export function createWatch(){
   // --- Boite tonneau : faces satinees, flancs et chanfreins polis
   { const s = new THREE.Shape();
     const outline = (k, sh = new THREE.Shape())=>{
-      const P = [[-1.45, 2.33], [0, 2.38], [1.45, 2.33], [1.97, 1.32], [2.11, 0], [1.97, -1.32], [1.45, -2.33], [0, -2.38], [-1.45, -2.33], [-1.97, -1.32], [-2.11, 0], [-1.97, 1.32]]
+      // flancs a 3/9 h a peine plus larges que la lunette, epaules trapezoidales a 12/6 h
+      const P = [[-1.42, 2.36], [0, 2.38], [1.42, 2.36], [1.99, 1.18], [2.03, 0], [1.99, -1.18], [1.42, -2.36], [0, -2.38], [-1.42, -2.36], [-1.99, -1.18], [-2.03, 0], [-1.99, 1.18]]
         .map(([x, y])=>new THREE.Vector2(x * k, y * k));
       roundedFromPoints(P, 0.34 * k, sh);
       sh.holes.push(circlePath(1.5));
@@ -422,32 +424,38 @@ export function createWatch(){
   // --- Bracelet integre : rangs de maillons lateraux satines + maillon central poli decale
   const bracelet = new THREE.Group(); watch.add(bracelet);
 
-  { const R = 3.3, a0 = Math.asin(2.64 / 3.3), da = 0.155, rows = 9, zc = -0.11 - R * Math.cos(a0);
+  { const R = 3.3, a0 = Math.asin(2.62 / 3.3), da = 0.138, rows = 10, zc = -0.11 - R * Math.cos(a0);
     const frame = (a, dir)=>{
       const P = new THREE.Vector3(0, dir * R * Math.sin(a), zc + R * Math.cos(a));
       const T = new THREE.Vector3(0, dir * Math.cos(a), -Math.sin(a)).normalize();
       const N = new THREE.Vector3(0, dir * Math.sin(a), Math.cos(a)).normalize();
       return { P, m:new THREE.Matrix4().makeBasis(new THREE.Vector3(dir, 0, 0), T, N) };
     };
-    const centerGeo = extrude(roundedRect(0.48, 0.28, 0.12), 0.14, 0.05, 5); centerGeo.translate(0, 0, -0.08);
+    // Maillons plats et jointifs (comme l'original) : grands maillons lateraux satines a fins
+    // biseaux polis, petit maillon central poli place a cheval entre deux rangs.
+    const gap = 0.46, len = 0.41;
+    const centerGeo = extrude(roundedRect(gap - 0.04, 0.3, 0.06), 0.1, 0.022, 4); centerGeo.translate(0, 0, -0.05);
+    const barGeo = new THREE.BoxGeometry(gap + 0.02, len, 0.08); barGeo.translate(0, 0, -0.09);
     const sideCache = {};
     [1, -1].forEach(dir=>{
       for(let i = 0; i < rows; i++){
-        const f = i / (rows - 1), w = 3.0 - 0.5 * f, th = 0.21 - 0.03 * f;
-        const ws = (w - 0.62) / 2, key = ws.toFixed(3) + th.toFixed(3);
+        const f = i / (rows - 1), w = 2.95 - 0.55 * f, th = 0.16 - 0.025 * f;
+        const ws = (w - gap) / 2, key = ws.toFixed(3) + th.toFixed(3);
         if(!sideCache[key]){
-          const s = roundedFromPoints([[-ws / 2, -0.21], [ws / 2, -0.21], [ws / 2 - 0.03, 0.21], [-ws / 2 + 0.03, 0.21]].map(([x, y])=>new THREE.Vector2(x, y)), 0.09);
-          const g = extrude(s, th - 0.04, 0.05, 5, 8); g.translate(0, 0, -(th - 0.04) / 2); sideCache[key] = g;
+          const s = roundedFromPoints([[-ws / 2, -len / 2], [ws / 2, -len / 2], [ws / 2 - 0.015, len / 2], [-ws / 2 + 0.015, len / 2]].map(([x, y])=>new THREE.Vector2(x, y)), 0.035);
+          const g = extrude(s, th - 0.04, 0.022, 4, 8); g.translate(0, 0, -(th - 0.04) / 2); sideCache[key] = g;
         }
         const { P, m } = frame(a0 + i * da, dir);
         [-1, 1].forEach(side=>{
           const link = shadowy(new THREE.Mesh(sideCache[key], [M.satinV, M.polish]));
-          link.applyMatrix4(new THREE.Matrix4().makeTranslation(side * (0.31 + ws / 2), 0, 0).premultiply(m));
+          link.applyMatrix4(new THREE.Matrix4().makeTranslation(side * (gap / 2 + ws / 2), 0, 0).premultiply(m));
           link.position.add(P); bracelet.add(link);
         });
+        // piece d'assemblage en retrait, visible entre deux maillons centraux
+        const bar = shadowy(new THREE.Mesh(barGeo, M.satinV)); bar.applyMatrix4(m); bar.position.add(P); bracelet.add(bar);
       }
-      for(let i = 0; i < rows; i++){
-        const { P, m } = frame(a0 + i * da, dir);
+      for(let i = 0; i < rows - 1; i++){
+        const { P, m } = frame(a0 + (i + 0.5) * da, dir);
         const c = shadowy(new THREE.Mesh(centerGeo, M.polish)); c.applyMatrix4(m); c.position.add(P); bracelet.add(c);
       }
     });
@@ -510,7 +518,12 @@ export function createWatch(){
 
   // Logo « AP » applique en or gris sous l'index de midi, extrude et facette
   function addLogo(font, TextGeometry){
-    const g = new TextGeometry('AP', { font, size:0.15, depth:0.016, curveSegments:6, bevelEnabled:true, bevelThickness:0.006, bevelSize:0.005, bevelSegments:2 });
+    // A et P serres l'un contre l'autre, lettres hautes et fines (monogramme de la marque)
+    const opts = { font, size:0.13, depth:0.014, curveSegments:8, bevelEnabled:true, bevelThickness:0.005, bevelSize:0.003, bevelSegments:2 };
+    const a = new TextGeometry('A', opts), p = new TextGeometry('P', opts);
+    a.computeBoundingBox(); p.computeBoundingBox();
+    p.translate(a.boundingBox.max.x - p.boundingBox.min.x - 0.012, 0, 0);
+    const g = mergeGeometries([a, p]); g.scale(0.92, 1.18, 1);
     g.computeBoundingBox(); const b = g.boundingBox; g.translate(-(b.max.x + b.min.x) / 2, -(b.max.y + b.min.y) / 2, 0);
     const m = add(g, M.trim); m.position.set(0, 0.66, 0.165);
   }

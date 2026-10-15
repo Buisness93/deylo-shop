@@ -6,7 +6,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { createWatch, VARIANTS } from './watch.js?v=9';
+import { createWatch, VARIANTS } from './watch.js?v=10';
 
 const $ = (id)=>document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -432,7 +432,7 @@ $('rdvForm').addEventListener('submit', (e)=>{
   try { await Promise.all(['600 112px "Cormorant Garamond"', '500 78px "Cormorant Garamond"', '500 34px "Jost"', '600 150px "Jost"'].map(f=>document.fonts.load(f))); } catch(e){}
   bar.style.width = '50%';
   try {
-    const font = await new FontLoader().loadAsync('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/fonts/helvetiker_bold.typeface.json');
+    const font = await new FontLoader().loadAsync('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/fonts/optimer_bold.typeface.json');
     W.addLogo(font, TextGeometry);
   } catch(e){ /* sans la police, le cadran garde sa signature imprimee */ }
   bar.style.width = '65%';
