@@ -6,6 +6,8 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { createWatch, VARIANTS } from './watch.js?v=10';
 
 const $ = (id)=>document.getElementById(id);
@@ -115,6 +117,42 @@ const cam = { pos:new THREE.Vector3(), target:new THREE.Vector3() };
 
 const W = createWatch();
 scene.add(W.root);
+
+// ---------- Vrai modele 3D (Sketchfab, CC BY-NC-SA) a la place de la reconstitution codee ----------
+// La montre codee reste affichee pendant le chargement, et en secours si le fichier manque.
+const REAL = { path:'models/ap-royaloak-tourbillon/scene.glb', rotation:[90, 0, 0] };
+// le bracelet ferme passe derriere la boite et cacherait le fond : on coupe ce qui depasse
+// en arriere de la boite (plan exprime dans le repere de la montre, recale a chaque image)
+const CUT = new THREE.Plane(new THREE.Vector3(0, 0, 1), 1.0), braceletCut = CUT.clone();
+renderer.localClippingEnabled = true;
+let real = false;
+async function loadReal(){
+  const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(REAL.path);
+  const m = gltf.scene;
+  m.rotation.set(...REAL.rotation.map(THREE.MathUtils.degToRad));
+  m.traverse(o=>{
+    if(!o.isMesh) return;
+    o.castShadow = o.receiveShadow = true;
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(mt=>{ if(mt.map) mt.map.anisotropy = 8; mt.clippingPlanes = [braceletCut]; mt.clipShadows = true; });
+  });
+  // Le modele a un bracelet ferme en boucle derriere la tete : on cale la tete seule (tranche
+  // avant du modele) sur l'encombrement de la reconstitution, pour garder cadrages et chapitres.
+  W.root.updateMatrixWorld(true);
+  const ref = new THREE.Box3().setFromObject(W.watch), rc = ref.getCenter(new THREE.Vector3());
+  const g = new THREE.Group(); g.add(m); g.updateMatrixWorld(true);
+  const pts = [], v = new THREE.Vector3();
+  m.traverse(o=>{ if(!o.isMesh) return; const p = o.geometry.attributes.position; for(let i = 0; i < p.count; i += 5) pts.push(v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld).clone()); });
+  let zmin = Infinity, zmax = -Infinity; pts.forEach(p=>{ zmin = Math.min(zmin, p.z); zmax = Math.max(zmax, p.z); });
+  const head = new THREE.Box3(); pts.forEach(p=>{ if(p.z > zmax - (zmax - zmin) * 0.25) head.expandByPoint(p); });
+  const hs = head.getSize(new THREE.Vector3()), hc = head.getCenter(new THREE.Vector3());
+  const k = (ref.max.x - ref.min.x) / hs.x;
+  g.scale.setScalar(k);
+  g.position.set(rc.x - hc.x * k, -hc.y * k, 0.45 - zmax * k);
+  W.watch.visible = false;
+  W.root.add(g);
+  real = true;
+  document.body.classList.add('real-model');
+}
 
 // post-traitement : MSAA 4x + halo sur les hautes lumieres + sortie ACES/sRGB
 const rt = new THREE.WebGLRenderTarget(4, 4, { type:THREE.HalfFloatType, samples:4 });
@@ -250,7 +288,8 @@ const hsEls = W.hotspots.map(h=>{
 });
 const tmpV = new THREE.Vector3(), tmpN = new THREE.Vector3(), tmpD = new THREE.Vector3();
 function placeHotspots(){
-  const show = atelier && $('tglNotes').checked && !tween;
+  // les annotations sont placees sur la reconstitution : masquees avec le vrai modele
+  const show = atelier && !real && $('tglNotes').checked && !tween;
   $('hotspots').classList.toggle('show', show);
   if(!show) return;
   const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -337,6 +376,7 @@ function frame(){
   bloom.strength = night * 0.95; bloom.threshold = 3.0 - night * 2.8;
   bloom.enabled = night > 0.01;            // le halo ne sert qu'a la luminescence
   W.setNight(night);
+  if(real){ W.root.updateMatrixWorld(); braceletCut.copy(CUT).applyMatrix4(W.root.matrixWorld); }
 
   if(scrollSeg > 2.6 && scrollSeg < 3.4 && !atelier) W.kickRotor(dt * 1.5);
   // Rendu a la demande : la scene est lourde (sureéchantillonnage, ombres douces, verre).
@@ -368,17 +408,19 @@ function renderThumbs(){
   camera.position.copy(camOut.pos); camera.lookAt(camOut.target);
   renderer.setPixelRatio(1); composer.setPixelRatio(1); renderer.setSize(720, 840, false); composer.setSize(720, 840);
   camera.aspect = 720 / 840; camera.fov = 30; camera.updateProjectionMatrix();
-  const cards = Object.entries(VARIANTS).map(([k, v])=>{
+  // le vrai modele n'existe qu'en acier : une seule carte
+  const cards = Object.entries(VARIANTS).filter(([k])=>!real || k === 'acier').map(([k, v])=>{
     variant = k; W.setVariant(k); setBackdrop(); W.update(0, 0);
     renderer.shadowMap.needsUpdate = true;
     composer.render(0);
     const img = canvas.toDataURL('image/jpeg', 0.9);
     return '<article class="coll-card" data-pick="' + k + '" style="--m:' + v.glow + '">' +
       '<div class="cc-img"><img src="' + img + '" alt="Rendu 3D Royal Oak ' + v.name + ', ' + v.sub + '"></div>' +
-      '<div class="cc-body"><p class="cc-ref">Audemars Piguet · ' + (k === 'acier' ? 'Réf. 15510ST' : 'Étude 3D') + '</p><h3>Royal Oak</h3><p class="cc-sub">' + v.sub + '</p>' +
+      '<div class="cc-body"><p class="cc-ref">Audemars Piguet · ' + (real ? 'Modèle 3D' : k === 'acier' ? 'Réf. 15510ST' : 'Étude 3D') + '</p><h3>' + (real ? 'Royal Oak Tourbillon' : 'Royal Oak') + '</h3><p class="cc-sub">' + (real ? 'Acier · Grande Tapisserie · tourbillon à 6 h' : v.sub) + '</p>' +
       '<div class="cc-foot"><span>Prix sur demande</span><button class="btn btn-line btn-sm" type="button">Examiner en 3D</button></div></div></article>';
   });
   grid.innerHTML = cards.join('');
+  if(real) document.querySelector('#versions h2').innerHTML = 'Une silhouette,<br><em>en vrai relief.</em>';
   resize();
   grid.querySelectorAll('[data-pick]').forEach(c=>c.addEventListener('click', ()=>{
     setVariant(c.dataset.pick);
@@ -435,6 +477,8 @@ $('rdvForm').addEventListener('submit', (e)=>{
     const font = await new FontLoader().loadAsync('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/fonts/optimer_bold.typeface.json');
     W.addLogo(font, TextGeometry);
   } catch(e){ /* sans la police, le cadran garde sa signature imprimee */ }
+  bar.style.width = '55%';
+  try { await loadReal(); } catch(e){ /* fichier absent : on garde la reconstitution codee */ }
   bar.style.width = '65%';
   await new Promise(r=>setTimeout(r, 30));
   buildFinishUI();

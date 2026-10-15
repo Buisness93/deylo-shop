@@ -260,3 +260,6 @@ body.night .stage-glow{background:radial-gradient(125% 95% at 50% 42%,transparen
 .timeline,.histoire .sec-head{opacity:0;transform:translateY(30px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
 @media (max-width:900px){ .timeline{grid-template-columns:1fr 1fr;row-gap:20px} }
 @media (max-width:560px){ .timeline{grid-template-columns:1fr} }
+
+/* vrai modele 3D : une seule version, pas d'annotations (placees sur la reconstitution) */
+.real-model #finishPick, .real-model #atFinishes, .real-model .at-side > .at-label, .real-model .at-toggle:has(#tglNotes){ display:none; }
