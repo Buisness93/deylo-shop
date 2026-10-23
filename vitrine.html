@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=9">
-<link rel="stylesheet" href="css/vitrine.css?v=1">
+<link rel="stylesheet" href="css/style.css?v=25">
+<link rel="stylesheet" href="css/vitrine.css?v=3">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -19,7 +19,7 @@
 } }
 </script>
 </head>
-<body class="vitrine">
+<body class="vitrine ready">
 <header class="nav solid" id="nav">
   <a href="index.html" class="brand" aria-label="Deylo Shop, accueil">DEYLO<span>SHOP</span></a>
   <nav class="nav-links" aria-label="Navigation principale">
@@ -29,7 +29,7 @@
   <a href="index.html#rendez-vous" class="nav-cta">Nous contacter</a>
 </header>
 
-<main class="vt">
+<main class="vt" id="top">
   <aside class="vt-list" aria-label="Montres">
     <p class="eyebrow">Vitrine 3D</p>
     <h1>Pièces<br><em>à examiner.</em></h1>
@@ -41,6 +41,7 @@
     <div class="vt-glow" aria-hidden="true"></div>
     <div class="vt-state" id="vtState" hidden></div>
     <div class="vt-head">
+      <p class="vt-count" id="vtCount"></p>
       <p class="eyebrow" id="vtBrand">—</p>
       <h2 id="vtModel">—</h2>
       <p class="vt-sub" id="vtSub"></p>
@@ -58,12 +59,26 @@
   </section>
 </main>
 
-<footer class="foot">
-  <div class="foot-brand">DEYLO SHOP</div>
-  <p>Revendeur indépendant de montres de prestige, non affilié aux marques présentées. Rolex, Audemars Piguet, Royal Oak et Richard Mille sont des marques de leurs propriétaires respectifs.</p>
-  <p>Les modèles 3D sont des créations de leurs auteurs, crédités sous chaque montre, utilisées selon leur licence Creative Commons. Ce ne sont pas des photos de produits.</p>
+<footer class="foot in">
+  <div class="foot-top">
+    <div class="foot-id">
+      <div class="foot-brand">DEYLO <span>SHOP</span></div>
+      <p>Revendeur indépendant de montres de prestige.</p>
+    </div>
+    <nav class="foot-nav" aria-label="Pied de page">
+      <p>Explorer</p>
+      <a href="vitrine.html">Vitrine 3D</a>
+      <a href="index.html">La Day-Date en 3D</a>
+      <a href="index.html#rendez-vous">Nous contacter</a>
+    </nav>
+    <a class="foot-up" href="#top" aria-label="Revenir en haut">↑</a>
+  </div>
+  <div class="foot-legal">
+    <p>Deylo Shop n'est affilié à aucune des marques présentées. Rolex, Audemars Piguet, Royal Oak, Richard Mille, Patek Philippe, Omega et Hublot sont des marques de leurs propriétaires respectifs.</p>
+    <p class="foot-small">Les modèles 3D sont des créations de leurs auteurs, crédités sous chaque montre et utilisés selon leur licence Creative Commons. Ce ne sont pas des photos de produits.</p>
+  </div>
 </footer>
 
-<script type="module" src="js/vitrine.js?v=3"></script>
+<script type="module" src="js/vitrine.js?v=4"></script>
 </body>
 </html>

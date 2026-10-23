@@ -533,7 +533,7 @@ $('tglSpin').addEventListener('change', (e)=>{ spin = e.target.checked; });
 $('tglNight').addEventListener('change', (e)=>setNight(e.target.checked));
 
 const fmtTime = new Intl.DateTimeFormat('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-setInterval(()=>{ $('liveTime').textContent = fmtTime.format(new Date()); }, 250);
+if($('liveTime')) setInterval(()=>{ $('liveTime').textContent = fmtTime.format(new Date()); }, 250);
 
 document.querySelectorAll('[data-count]').forEach(el=>{
   const ob = new IntersectionObserver((es)=>{

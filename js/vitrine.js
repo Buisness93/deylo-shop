@@ -13,7 +13,7 @@ const esc = (s)=>String(s).replace(/[&<>"]/g, c=>({ '&':'&amp;', '<':'&lt;', '>'
 
 // ---------- Rendu ----------
 const canvas = $('vtGl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance' });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -21,7 +21,7 @@ const PR_MOVE = Math.min(1.25, devicePixelRatio || 1), PR_STILL = Math.min(2, Ma
 let pixelRatio = PR_STILL;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x070605);
+// fond transparent : le decor de studio est peint en CSS derriere le canevas
 
 // studio photo : softboxes qui dessinent les reflets sur le metal poli
 function studioEnvironment(){
@@ -118,10 +118,16 @@ async function show(w){
   $('vtBrand').textContent = w.brand;
   $('vtModel').textContent = w.model;
   $('vtSub').textContent = w.sub;
+  const i = catalog.indexOf(w);
+  $('vtCount').innerHTML = '<b>' + String(i + 1).padStart(2, '0') + '</b> / ' + String(catalog.length).padStart(2, '0');
+  const head = document.querySelector('.vt-head');
+  head.classList.remove('in'); void head.offsetWidth; head.classList.add('in');
   $('vtCredit').innerHTML = 'Modèle 3D « ' + esc(w.title) + ' » par ' + (w.authorUrl ? '<a href="' + esc(w.authorUrl) + '" target="_blank" rel="noopener">' + esc(w.author) + '</a>' : esc(w.author)) + ' (<a href="' + esc(w.source) + '" target="_blank" rel="noopener">Sketchfab</a>), licence <a href="' + esc(w.licenseUrl) + '" target="_blank" rel="noopener">' + esc(w.license) + '</a>.';
   holder.clear(); dirty = true;
+  document.querySelector('.vt-stage').classList.toggle('empty', !w.available);
   if(!w.available){
-    state('<b>Modèle à déposer</b><p>Téléchargez le glTF depuis <a href="' + esc(w.source) + '" target="_blank" rel="noopener">sa page Sketchfab</a> et placez-le ici :</p><code>' + esc(w.path) + '</code>');
+    state('<span class="vt-soon">Bientôt en vitrine</span><p>Cette pièce rejoint la vitrine prochainement. En attendant, nous pouvons vous en parler.</p><a class="btn btn-line btn-sm" href="index.html#rendez-vous">Nous contacter</a>' +
+      '<small>Modèle attendu : <a href="' + esc(w.source) + '" target="_blank" rel="noopener">Sketchfab</a> → <code>' + esc(w.path) + '</code></small>');
     return;
   }
   try {
@@ -139,7 +145,7 @@ async function show(w){
     if(token !== loadToken) return;
     holder.add(root);
     const s = root.userData.size;
-    fitDist = Math.max(s.x / camera.aspect, s.y) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.1 + s.z * 0.5;
+    fitDist = Math.max(s.x / camera.aspect, s.y) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.4 + s.z * 0.5;
     controls.maxDistance = fitDist * 2.5; controls.minDistance = fitDist * 0.25;
     goView('front', true);
     document.querySelectorAll('#vtViews button').forEach(b=>b.classList.toggle('on', b.dataset.view === 'front'));
@@ -152,9 +158,9 @@ async function show(w){
 
 // ---------- Interface ----------
 function renderCards(){
-  $('vtCards').innerHTML = catalog.map(w=>
-    '<button type="button" class="vt-card" data-id="' + esc(w.id) + '"><span class="b">' + esc(w.brand) + '</span><span class="m">' + esc(w.model) + '</span><span class="s">' + esc(w.sub) + '</span>' +
-    '<span class="tags">' + (w.commercial ? '<span class="tag ok">Usage commercial autorisé</span>' : '<span class="tag nc">Licence non commerciale</span>') + (w.available ? '' : '<span class="tag miss">Fichier à déposer</span>') + '</span></button>'
+  $('vtCards').innerHTML = catalog.map((w, i)=>
+    '<button type="button" class="vt-card' + (w.available ? '' : ' soon') + '" data-id="' + esc(w.id) + '"><span class="n">' + String(i + 1).padStart(2, '0') + '</span><span class="b">' + esc(w.brand) + '</span><span class="m">' + esc(w.model) + '</span><span class="s">' + esc(w.sub) + '</span>' +
+    '<span class="lic">' + (w.available ? '' : '<em>Bientôt</em> · ') + 'Licence ' + esc(w.license) + '</span></button>'
   ).join('');
   document.querySelectorAll('.vt-card').forEach(c=>c.addEventListener('click', ()=>show(catalog.find(w=>w.id === c.dataset.id))));
 }
@@ -190,6 +196,8 @@ function frame(){
   resize();
   try { catalog = (await (await fetch('models/catalog.json', { cache:'no-store' })).json()).watches; } catch(e){ catalog = []; }
   await Promise.all(catalog.map(async w=>{ w.available = await exists(w.path); }));
+  // les pieces deja en 3D d'abord, celles a venir ensuite
+  catalog = [...catalog.filter(w=>w.available), ...catalog.filter(w=>!w.available)];
   renderCards();
   const first = catalog.find(w=>w.available) || catalog[0];
   if(first) show(first);
