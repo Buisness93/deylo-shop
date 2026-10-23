@@ -26,6 +26,8 @@ const VIEWS = [
   { name:'Bracelet', target:[0, 1.0, -0.6], r:14.5, theta:-0.8, phi:0.88, shift:-0.16 },
   { name:'Couronne', target:[2.0, 0, -0.05], r:6.4, theta:1.25, phi:1.38, shift:0 },
 ];
+// recul general : la montre occupe moins l'ecran
+VIEWS.forEach(v=>{ v.r *= 1.5; });
 const STORY = [0, 1, 2, 3, 4];           // chapitres du defilement
 function viewToCam(v, out){
   const s = Math.sin(v.phi);
@@ -197,7 +199,7 @@ composer.addPass(new OutputPass());
 const controls = new OrbitControls(camera, canvas);
 controls.enabled = false;
 controls.enableDamping = true; controls.dampingFactor = 0.08;
-controls.minDistance = 3.2; controls.maxDistance = 22;
+controls.minDistance = 3.2; controls.maxDistance = 30;
 controls.rotateSpeed = 0.7;
 
 function setSamples(n){
@@ -212,7 +214,7 @@ function resize(){
   composer.setSize(w, h);
   setSamples(pixelRatio <= PR_MOVE ? 2 : 4);
   camera.aspect = w / h;
-  camera.fov = w / h < 0.8 ? 40 : 30;
+  camera.fov = w / h < 0.8 ? 48 : 30;
   camera.updateProjectionMatrix();
 }
 let resized = false;
@@ -563,7 +565,7 @@ $('rdvForm').addEventListener('submit', (e)=>{
 (async function start(){
   const bar = $('loaderBar');
   bar.style.width = '30%';
-  try { await Promise.all(['600 112px "Cormorant Garamond"', '500 78px "Cormorant Garamond"', '500 34px "Jost"', '600 150px "Jost"'].map(f=>document.fonts.load(f))); } catch(e){}
+  try { await Promise.all(['400 80px "Instrument Serif"', 'italic 400 80px "Instrument Serif"', '400 16px "Manrope"', '500 12px "Manrope"'].map(f=>document.fonts.load(f))); } catch(e){}
   bar.style.width = '50%';
   try {
     const font = await new FontLoader().loadAsync('https://cdn.jsdelivr.net/npm/three@0.169.0/examples/fonts/optimer_bold.typeface.json');
