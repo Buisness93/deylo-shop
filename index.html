@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=22">
+<link rel="stylesheet" href="css/style.css?v=24">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -57,25 +57,25 @@
           </div>
           <p class="live-time"><span>Heure locale</span><b id="liveTime">--:--:--</b><small>Heure de votre appareil.</small></p>
         </article>
-        <article class="chapter ch-left" data-ch="1">
+        <article class="chapter ch-left" data-ch="1" data-num="I">
           <p class="eyebrow">I — La lunette</p>
           <h2>Cannelée,<br><em>en or massif.</em></h2>
           <p>Autrefois, les cannelures servaient à visser la lunette sur la boîte Oyster. Elles sont devenues décoratives et ne se taillent que dans le métal précieux. Chaque arête renvoie la lumière : c'est la signature des Rolex habillées.</p>
           <dl class="mini-specs"><div><dt>Lunette</dt><dd>Cannelée, or gris</dd></div><div><dt>Boîte</dt><dd>Oyster, 40 mm</dd></div></dl>
         </article>
-        <article class="chapter ch-right" data-ch="2">
+        <article class="chapter ch-right" data-ch="2" data-num="II">
           <p class="eyebrow">II — Le cadran</p>
           <h2>Le jour<br><em>en toutes lettres.</em></h2>
           <p>Le jour de la semaine est écrit en entier dans un guichet en arc à midi, et la date à trois heures sous la loupe Cyclope, qui la grossit pour qu'on la lise d'un coup d'œil. Couronne Rolex appliquée et chiffres romains en relief.</p>
           <dl class="mini-specs"><div><dt>Affichage</dt><dd>Jour à midi, date à 3 h</dd></div><div><dt>Chiffres</dt><dd>Romains, appliqués</dd></div></dl>
         </article>
-        <article class="chapter ch-left" data-ch="3">
+        <article class="chapter ch-left" data-ch="3" data-num="III">
           <p class="eyebrow">III — Le fond Oyster</p>
           <h2>Fermée<br><em>comme une huître.</em></h2>
           <p>Pas de fond saphir : Rolex visse un fond plein, cannelé sur son pourtour, serré avec un outil réservé aux horlogers. Avec la couronne vissée, il rend la boîte étanche. Le calibre 3255 travaille derrière, invisible.</p>
           <dl class="mini-specs"><div><dt>Fond</dt><dd>Plein, vissé</dd></div><div><dt>Étanchéité</dt><dd>100 mètres</dd></div></dl>
         </article>
-        <article class="chapter ch-right" data-ch="4">
+        <article class="chapter ch-right" data-ch="4" data-num="IV">
           <p class="eyebrow">IV — Le bracelet</p>
           <h2>Président,<br><em>né avec elle.</em></h2>
           <p>Créé pour la Day-Date en 1956 et réservé aux métaux précieux, le bracelet Président aligne des maillons demi-ronds à trois éléments. Les maillons centraux sont polis, les maillons latéraux satinés, et le fermoir à couronne se cache sous le bracelet.</p>
@@ -116,6 +116,11 @@
       </div>
     </div>
   </section>
+
+  <div class="ribbon" aria-hidden="true"><div class="ribbon-track">
+    <span>Oyster Perpetual</span><i></i><span>Day-Date 40</span><i></i><span>Or gris 18 carats</span><i></i><span>Calibre 3255</span><i></i><span>Chronomètre Superlatif</span><i></i><span>Lunette cannelée</span><i></i><span>Bracelet Président</span><i></i>
+    <span>Oyster Perpetual</span><i></i><span>Day-Date 40</span><i></i><span>Or gris 18 carats</span><i></i><span>Calibre 3255</span><i></i><span>Chronomètre Superlatif</span><i></i><span>Lunette cannelée</span><i></i><span>Bracelet Président</span><i></i>
+  </div></div>
 
   <section class="section collection" id="versions">
     <header class="sec-head">
@@ -185,8 +190,14 @@
         <p class="eyebrow">Deylo Shop</p>
         <h2>Une Day-Date<br><em>vous intéresse ?</em></h2>
         <p class="sec-lede">Dites-nous quelle version vous cherchez : nous revenons vers vous avec les pièces disponibles, leur état et leur historique.</p>
+        <ol class="steps">
+          <li><b>01</b><div><h3>Votre demande</h3><p>La version, le métal, le cadran et le budget que vous visez.</p></div></li>
+          <li><b>02</b><div><h3>Notre sélection</h3><p>Les pièces disponibles, avec leur état et leur historique.</p></div></li>
+          <li><b>03</b><div><h3>Votre choix</h3><p>Vous comparez et décidez à votre rythme.</p></div></li>
+        </ol>
       </header>
       <form class="rdv-form" id="rdvForm" novalidate>
+        <p class="form-title">Être recontacté</p>
         <label><span>Nom</span><input name="nom" autocomplete="name" required></label>
         <label><span>Adresse e-mail</span><input name="email" type="email" autocomplete="email" required></label>
         <label><span>Version recherchée</span><select name="modele" id="rdvModel"></select></label>
@@ -199,13 +210,32 @@
 </main>
 
 <footer class="foot">
-  <div class="foot-brand">DEYLO SHOP</div>
-  <p>Revendeur indépendant de montres de prestige. Deylo Shop n'est ni affilié à Rolex, ni distributeur agréé de la marque.</p>
-  <p>Rolex, Day-Date, Oyster, Président, Cyclope et le logo à couronne sont des marques de Rolex SA. La montre affichée est un modèle 3D à but éducatif, pas une photo de produit, et peut différer de l'original dans ses détails.</p>
-  <p class="foot-small">Modèle 3D « <a href="https://sketchfab.com/3d-models/rolex-datejust-9ad3e4c91e91405d9fc526c8ef496d0e" target="_blank" rel="noopener">Rolex Datejust</a> » par <a href="https://sketchfab.com/YevhenArtamonov" target="_blank" rel="noopener">Yevhen Artamonov</a>, licence <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
-  <p class="foot-small">Site de démonstration : le formulaire n'envoie aucune donnée. Rendu en temps réel avec three.js.</p>
+  <div class="foot-top">
+    <div class="foot-id">
+      <div class="foot-brand">DEYLO <span>SHOP</span></div>
+      <p>Revendeur indépendant de montres de prestige.</p>
+    </div>
+    <nav class="foot-nav" aria-label="Pied de page">
+      <p>La page</p>
+      <a href="#top">La Day-Date en 3D</a>
+      <a href="#versions">La pièce</a>
+      <a href="#histoire">Histoire</a>
+      <a href="#calibre">Calibre 3255</a>
+      <a href="#savoir-faire">Finitions</a>
+    </nav>
+    <nav class="foot-nav" aria-label="Autres pages">
+      <p>Explorer</p>
+      <a href="vitrine.html">Vitrine 3D</a>
+      <a href="#rendez-vous">Nous contacter</a>
+    </nav>
+    <a class="foot-up" href="#top" aria-label="Revenir en haut">↑</a>
+  </div>
+  <div class="foot-legal">
+    <p>Deylo Shop n'est ni affilié à Rolex, ni distributeur agréé de la marque. Rolex, Day-Date, Oyster, Président, Cyclope et le logo à couronne sont des marques de Rolex SA. La montre affichée est un modèle 3D à but éducatif, pas une photo de produit, et peut différer de l'original dans ses détails.</p>
+    <p class="foot-small">Modèle 3D « <a href="https://sketchfab.com/3d-models/rolex-datejust-9ad3e4c91e91405d9fc526c8ef496d0e" target="_blank" rel="noopener">Rolex Datejust</a> » par <a href="https://sketchfab.com/YevhenArtamonov" target="_blank" rel="noopener">Yevhen Artamonov</a>, licence <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. Site de démonstration : le formulaire n'envoie aucune donnée. Rendu en temps réel avec three.js.</p>
+  </div>
 </footer>
 
-<script type="module" src="js/main.js?v=22"></script>
+<script type="module" src="js/main.js?v=23"></script>
 </body>
 </html>
