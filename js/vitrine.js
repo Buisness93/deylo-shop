@@ -122,12 +122,11 @@ async function show(w){
   $('vtCount').innerHTML = '<b>' + String(i + 1).padStart(2, '0') + '</b> / ' + String(catalog.length).padStart(2, '0');
   const head = document.querySelector('.vt-head');
   head.classList.remove('in'); void head.offsetWidth; head.classList.add('in');
-  $('vtCredit').innerHTML = 'Modèle 3D « ' + esc(w.title) + ' » par ' + (w.authorUrl ? '<a href="' + esc(w.authorUrl) + '" target="_blank" rel="noopener">' + esc(w.author) + '</a>' : esc(w.author)) + ' (<a href="' + esc(w.source) + '" target="_blank" rel="noopener">Sketchfab</a>), licence <a href="' + esc(w.licenseUrl) + '" target="_blank" rel="noopener">' + esc(w.license) + '</a>.';
+  $('vtCredit').innerHTML = 'Modèle 3D : ' + (w.authorUrl ? '<a href="' + esc(w.authorUrl) + '" target="_blank" rel="noopener">' + esc(w.author) + '</a>' : esc(w.author)) + ' · <a href="' + esc(w.source) + '" target="_blank" rel="noopener">Sketchfab</a> · <a href="' + esc(w.licenseUrl) + '" target="_blank" rel="noopener">' + esc(w.license) + '</a>';
   holder.clear(); dirty = true;
   document.querySelector('.vt-stage').classList.toggle('empty', !w.available);
   if(!w.available){
-    state('<span class="vt-soon">Bientôt en vitrine</span><p>Cette pièce rejoint la vitrine prochainement. En attendant, nous pouvons vous en parler.</p><a class="btn btn-line btn-sm" href="index.html#rendez-vous">Nous contacter</a>' +
-      '<small>Modèle attendu : <a href="' + esc(w.source) + '" target="_blank" rel="noopener">Sketchfab</a> → <code>' + esc(w.path) + '</code></small>');
+    state('<span class="vt-soon">Bientôt en vitrine</span><p>Son modèle 3D arrive prochainement. En attendant, <span style="white-space:nowrap">parlons-en.</span></p><a class="btn btn-line btn-sm" href="index.html#rendez-vous">Nous contacter</a>');
     return;
   }
   try {
@@ -152,7 +151,7 @@ async function show(w){
     state(null);
   } catch(e){
     if(token !== loadToken) return;
-    state('<b>Impossible de charger ce modèle</b><p>Vérifiez que le dossier contient bien <code>scene.gltf</code>, <code>scene.bin</code> et le dossier <code>textures</code>.</p>');
+    state('<b>Chargement interrompu</b><p>Ce modèle n’a pas pu s’afficher. Réessayez ou choisissez une autre pièce.</p>');
   }
 }
 
@@ -160,7 +159,7 @@ async function show(w){
 function renderCards(){
   $('vtCards').innerHTML = catalog.map((w, i)=>
     '<button type="button" class="vt-card' + (w.available ? '' : ' soon') + '" data-id="' + esc(w.id) + '"><span class="n">' + String(i + 1).padStart(2, '0') + '</span><span class="b">' + esc(w.brand) + '</span><span class="m">' + esc(w.model) + '</span><span class="s">' + esc(w.sub) + '</span>' +
-    '<span class="lic">' + (w.available ? '' : '<em>Bientôt</em> · ') + 'Licence ' + esc(w.license) + '</span></button>'
+    (w.available ? '' : '<span class="lic"><em>Bientôt en vitrine</em></span>') + '</button>'
   ).join('');
   document.querySelectorAll('.vt-card').forEach(c=>c.addEventListener('click', ()=>show(catalog.find(w=>w.id === c.dataset.id))));
 }

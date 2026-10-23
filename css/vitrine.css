@@ -102,3 +102,9 @@ body.vitrine{background:var(--bg)}
 .vt-stage{background:radial-gradient(40% 36% at 50% 50%,rgba(230,207,168,.07),transparent 70%),radial-gradient(120% 100% at 50% 40%,#131110,#070605 70%)}
 .vt-card .lic{letter-spacing:.14em}
 .vt-tools .at-views button.on{color:var(--bg);background:var(--ink)}
+
+/* texte : courte invitation sous le titre */
+.vt-intro{margin:16px 0 0;max-width:280px;font-size:14px;line-height:1.65;color:var(--ink-3)}
+.vt-list h1{font-size:clamp(34px,3.2vw,48px);line-height:1.02}
+.vt-card .m{font-size:23px}
+@media (max-width:900px){ .vt-intro{max-width:none} }
